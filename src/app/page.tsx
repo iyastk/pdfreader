@@ -1,69 +1,86 @@
-import Image from "next/image";
+import type { Metadata } from 'next';
+import Navbar from '@/components/Navbar';
+import { getCategoriesWithCounts } from '@/lib/firestore';
+import CategoryCard from '@/components/CategoryCard';
+import EmptyState from '@/components/EmptyState';
+import { BookOpen, Sparkles } from 'lucide-react';
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: 'SSLC Reader — Study Smarter',
+  description: 'Browse SSLC study materials organized by subject.',
+};
+
+// Revalidate every 60 seconds for fresh category counts
+export const revalidate = 60;
+
+export default async function HomePage() {
+  let categories: Awaited<ReturnType<typeof getCategoriesWithCounts>> = [];
+
+  try {
+    categories = await getCategoriesWithCounts();
+  } catch (e) {
+    console.error('Failed to fetch categories:', e);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+    <>
+      <Navbar />
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
+        {/* Hero */}
+        <section className="relative mb-8 overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 px-5 py-8 sm:px-8 sm:py-12 text-white shadow-xl shadow-indigo-200">
+          {/* Background circles */}
+          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5" />
+          <div className="pointer-events-none absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-white/5" />
+
+          <div className="relative">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium backdrop-blur-sm">
+              <Sparkles className="h-4 w-4" />
+              Your Study Companion
+            </div>
+            <h1 className="mb-2 text-2xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+              SSLC Study Materials
+            </h1>
+            <p className="max-w-xl text-sm sm:text-lg text-indigo-100">
+              Browse textbooks, notes, and papers organized by subject. Read anywhere, anytime.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2 sm:gap-3">
+              <div className="rounded-xl bg-white/15 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium backdrop-blur-sm">
+                📚 {categories.length} Subjects
+              </div>
+              <div className="rounded-xl bg-white/15 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium backdrop-blur-sm">
+                📄 {categories.reduce((s, c) => s + c.documentCount, 0)} Documents
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Categories grid */}
+        <section id="subjects">
+          <div className="mb-5 flex items-center gap-2">
+            <BookOpen className="h-5 w-5 text-indigo-500" />
+            <h2 className="text-xl font-bold text-gray-800">Subjects</h2>
+          </div>
+
+          {categories.length === 0 ? (
+            <EmptyState
+              title="No subjects yet"
+              message="The admin hasn't added any study materials yet. Check back soon!"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
+              {categories.map((cat, index) => (
+                <CategoryCard
+                  key={cat.id}
+                  id={cat.id}
+                  name={cat.name}
+                  documentCount={cat.documentCount}
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
+        </section>
       </main>
-    </div>
+    </>
   );
 }

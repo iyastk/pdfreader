@@ -1,36 +1,159 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SSLC Reader 📚
+
+A modern, full-stack educational PDF reader and management platform built with **Next.js 16**, **Tailwind CSS v4**, and **Firebase**.
+
+---
+
+## Features
+
+### 👩‍🎓 Student Interface
+- Beautiful category grid with gradient cards
+- Search-filtered document list per subject
+- Full-screen PDF reader (Firebase PDFs + Google Drive)
+- Dark-mode reader interface
+- Mobile-responsive design
+
+### 🔐 Admin Dashboard
+- Email/password authentication via Firebase Auth
+- Create, view, delete subject categories
+- Upload PDFs directly to Firebase Storage with progress bar
+- Add Google Drive links (auto-converts to embed URLs)
+- Searchable document table with delete support
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Styling | Tailwind CSS v4 |
+| Icons | Lucide React |
+| Database | Firebase Firestore |
+| Storage | Firebase Storage |
+| Auth | Firebase Authentication |
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Firebase Setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. Go to [Firebase Console](https://console.firebase.google.com/) and open your project.
+2. **Firestore**: Create a Firestore database in **production mode**. Add these security rules:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Public read for categories and documents
+    match /categories/{catId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /documents/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. **Storage**: Enable Firebase Storage. Set these rules:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /pdfs/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. **Authentication**: Enable **Email/Password** sign-in. Create your admin user manually in the Firebase Console under Authentication → Users.
 
-## Learn More
+5. **CORS for Storage** (required for PDF rendering): Create a `cors.json` file:
 
-To learn more about Next.js, take a look at the following resources:
+```json
+[
+  {
+    "origin": ["*"],
+    "method": ["GET", "HEAD"],
+    "maxAgeSeconds": 3600
+  }
+]
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then run: `gsutil cors set cors.json gs://pdfreader-f74ea.firebasestorage.app`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Run Locally
 
-## Deploy on Vercel
+```bash
+cd sslc-reader
+npm install
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+App runs at: **http://localhost:3000**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Admin panel: **http://localhost:3000/admin**
+
+---
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx                    # Home: category grid
+│   ├── layout.tsx                  # Root layout + AuthProvider
+│   ├── not-found.tsx               # 404 page
+│   ├── category/[id]/
+│   │   ├── page.tsx                # Category: document list
+│   │   └── SearchBar.tsx           # Client search component
+│   ├── read/[id]/
+│   │   ├── page.tsx                # PDF reader page
+│   │   └── PDFViewer.tsx           # iframe viewer component
+│   └── admin/
+│       ├── layout.tsx              # Auth guard layout
+│       ├── page.tsx                # Dashboard overview
+│       ├── login/page.tsx          # Login page
+│       ├── categories/page.tsx     # Category management
+│       ├── upload/page.tsx         # PDF upload
+│       └── documents/page.tsx      # Document table
+├── components/
+│   ├── Navbar.tsx
+│   ├── CategoryCard.tsx
+│   ├── DocumentCard.tsx
+│   ├── LoadingSpinner.tsx
+│   ├── EmptyState.tsx
+│   ├── UploadProgress.tsx
+│   └── admin/
+│       ├── AdminSidebar.tsx
+│       ├── CategoryManager.tsx
+│       ├── DocumentUploader.tsx
+│       └── DocumentList.tsx
+├── context/
+│   └── AuthContext.tsx
+├── lib/
+│   ├── firebase.ts                 # Firebase init
+│   ├── firestore.ts                # CRUD helpers
+│   └── storage.ts                  # Upload helper
+└── types/
+    └── index.ts                    # TypeScript types
+```
+
+---
+
+## Deploy to Vercel
+
+```bash
+npx vercel
+```
+
+Or push to GitHub and connect to Vercel for automatic deployments.
+
+> **Note:** The Firebase config is embedded in the source. For production, consider moving secrets to environment variables.
