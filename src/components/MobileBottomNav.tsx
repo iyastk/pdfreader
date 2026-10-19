@@ -2,61 +2,51 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, Search, Home } from 'lucide-react';
+import { Home, BookOpen, Search } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { href: '/', label: 'Home', icon: Home },
+  { href: '/',         label: 'Home',     icon: Home },
   { href: '/#subjects', label: 'Subjects', icon: BookOpen },
-  { href: '/#search', label: 'Search', icon: Search },
+  { href: '/#search',   label: 'Search',   icon: Search },
 ];
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
-
-  // Only show on student-facing pages, not admin
   if (pathname.startsWith('/admin')) return null;
 
   return (
     <nav
-      className="mobile-bottom-nav"
+      className="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-50 items-center"
       style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 50,
-        display: 'none', // shown via CSS media query
-        height: '64px',
-        background: 'rgba(255,255,255,0.95)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderTop: '1px solid #e0e7ff',
-        paddingBottom: 'env(safe-area-inset-bottom)',
+        background: 'rgba(255,255,255,0.92)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderTop: '1px solid rgba(226,232,240,0.8)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        height: 'calc(64px + env(safe-area-inset-bottom, 0px))',
       }}
     >
-      <div style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
+      <div className="flex h-16 items-center">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href.replace('/#', '/'));
+          const isActive = href === '/' ? pathname === '/' : false;
           return (
             <Link
               key={href}
               href={href}
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '3px',
-                padding: '8px 4px',
-                color: isActive ? '#4f46e5' : '#9ca3af',
-                textDecoration: 'none',
-                transition: 'color 0.2s',
-                minHeight: '44px',
-              }}
+              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2 transition-all duration-200"
+              style={{ color: isActive ? '#4f46e5' : '#94a3b8' }}
             >
-              <Icon size={22} strokeWidth={isActive ? 2.5 : 1.8} />
-              <span style={{ fontSize: '10px', fontWeight: isActive ? '600' : '400', letterSpacing: '0.02em' }}>
+              {/* Active indicator */}
+              {isActive && (
+                <span className="absolute top-1.5 h-1 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500" />
+              )}
+              <Icon
+                size={20}
+                strokeWidth={isActive ? 2.5 : 1.8}
+                className="transition-transform duration-200"
+                style={{ transform: isActive ? 'scale(1.1)' : 'scale(1)' }}
+              />
+              <span className="text-[10px] font-semibold tracking-wide leading-none">
                 {label}
               </span>
             </Link>

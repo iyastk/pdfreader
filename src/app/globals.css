@@ -1,49 +1,50 @@
 @import "tailwindcss";
 
+/* ── Google Fonts ──────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Design Tokens ─────────────────────────────── */
 :root {
-  --background: #f8f9ff;
-  --foreground: #1a1a2e;
+  --bg: #f0f4ff;
+  --surface: #ffffff;
+  --border: #e8ecf8;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --primary: #4f46e5;
+  --primary-light: #eef2ff;
+  --radius: 16px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
-/* Safe-area support for notched phones */
-:root {
-  --safe-area-top: env(safe-area-inset-top, 0px);
-  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-area-left: env(safe-area-inset-left, 0px);
-  --safe-area-right: env(safe-area-inset-right, 0px);
-}
+/* ── Base ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
-  /* Prevent iOS bounce on pull-down */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
   overscroll-behavior: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* iOS tap highlight */
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #c7d2fe;
-  border-radius: 99px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #818cf8;
-}
+/* ── Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #818cf8; }
 
-/* PDF viewer full height */
+/* ── PDF Viewer ─────────────────────────────────── */
 .pdf-viewer-frame {
   border: none;
   width: 100%;
@@ -51,14 +52,13 @@ body {
   min-height: 80vh;
 }
 
-/* Line clamp utility */
+/* ── Utilities ──────────────────────────────────── */
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -66,59 +66,60 @@ body {
   overflow: hidden;
 }
 
-/* =========================================
-   MOBILE PWA STYLES
-   ========================================= */
-
-/* Bottom nav: hidden by default, visible on small screens */
-.mobile-bottom-nav {
-  display: none !important;
+/* ── Glass card ─────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.6);
 }
+
+/* ── Shimmer animation ──────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #f0f4ff 25%, #e8ecf8 50%, #f0f4ff 75%);
+  background-size: 200% auto;
+  animation: shimmer 1.5s linear infinite;
+}
+
+/* ── Fade-up animation ──────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.4s ease both; }
+
+/* ── Pulse glow ─────────────────────────────────── */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79,70,229,0.15); }
+  50%       { box-shadow: 0 0 0 8px rgba(79,70,229,0); }
+}
+.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+
+/* ── Bottom Nav (mobile only) ───────────────────── */
+.mobile-bottom-nav { display: none !important; }
 
 @media (max-width: 640px) {
-  .mobile-bottom-nav {
-    display: flex !important;
-  }
+  .mobile-bottom-nav { display: flex !important; }
 
-  /* Add padding to main content so it's not hidden behind bottom nav */
-  main {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-
-  /* PDF viewer should use full height minus the top bar only */
-  .pdf-read-page main {
-    padding-bottom: 0 !important;
+  main:not(.no-bottom-pad) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
-/* Touch-friendly minimum tap target size */
+/* ── Touch targets ──────────────────────────────── */
 @media (hover: none) {
-  button,
-  a,
-  [role="button"] {
+  button, a, [role="button"] {
     min-height: 44px;
     min-width: 44px;
   }
 }
 
-/* Prevent text size adjustments on orientation change */
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-/* Smooth scrolling for native feel */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Standalone PWA status bar padding */
+/* ── PWA standalone padding ─────────────────────── */
 @media (display-mode: standalone) {
-  body {
-    padding-top: env(safe-area-inset-top, 0px);
-  }
-
-  header {
-    padding-top: max(0px, env(safe-area-inset-top, 0px));
-  }
+  body  { padding-top: env(safe-area-inset-top, 0px); }
+  header { padding-top: max(0px, env(safe-area-inset-top, 0px)); }
 }
