@@ -14,6 +14,7 @@ import { Category } from '@/types';
 import { getCategories, createDocument, convertDriveLink } from '@/lib/firestore';
 import { uploadPDF } from '@/lib/storage';
 import UploadProgress from '@/components/UploadProgress';
+import { revalidateDocumentPages } from '@/app/actions';
 
 type Mode = 'upload' | 'drive';
 
@@ -68,6 +69,8 @@ export default function DocumentUploader() {
         const embedUrl = convertDriveLink(driveLink.trim());
         await createDocument({ title: title.trim(), categoryId, type: 'drive_link', fileUrl: embedUrl });
       }
+      // Immediately purge Vercel ISR cache so the document appears right away
+      await revalidateDocumentPages(categoryId);
       setSuccess(true);
       reset();
     } catch (err) {

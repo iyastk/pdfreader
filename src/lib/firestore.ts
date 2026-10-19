@@ -17,9 +17,15 @@ import { Category, Document } from '@/types';
 // ─── Categories ──────────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
-  const q = query(collection(db, 'categories'), orderBy('createdAt', 'asc'));
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Category));
+  try {
+    const q = query(collection(db, 'categories'), orderBy('createdAt', 'asc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Category));
+  } catch (err) {
+    console.error('getCategories error (falling back to unordered):', err);
+    const snapshot = await getDocs(collection(db, 'categories'));
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Category));
+  }
 }
 
 export async function getCategoryById(id: string): Promise<Category | null> {
@@ -47,19 +53,48 @@ export async function deleteCategory(id: string): Promise<void> {
 // ─── Documents ───────────────────────────────────────────────────────────────
 
 export async function getDocuments(): Promise<Document[]> {
-  const q = query(collection(db, 'documents'), orderBy('createdAt', 'desc'));
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Document));
+  try {
+    const q = query(collection(db, 'documents'), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Document));
+  } catch (err) {
+    // Fallback: fetch without ordering if index is missing
+    console.error('getDocuments error (falling back to unordered):', err);
+    const snapshot = await getDocs(collection(db, 'documents'));
+    const docs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Document));
+    return docs.sort((a, b) => {
+      const ta = a.createdAt?.toMillis?.() ?? 0;
+      const tb = b.createdAt?.toMillis?.() ?? 0;
+      return tb - ta;
+    });
+  }
 }
 
 export async function getDocumentsByCategory(categoryId: string): Promise<Document[]> {
-  const q = query(
-    collection(db, 'documents'),
-    where('categoryId', '==', categoryId),
-    orderBy('createdAt', 'desc')
-  );
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Document));
+  try {
+    // This query requires a composite index: categoryId ASC + createdAt DESC
+    const q = query(
+      collection(db, 'documents'),
+      where('categoryId', '==', categoryId),
+      orderBy('createdAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Document));
+  } catch (err) {
+    // Fallback: fetch by categoryId only, sort client-side
+    console.error('getDocumentsByCategory error (falling back):', err);
+    const q = query(
+      collection(db, 'documents'),
+      where('categoryId', '==', categoryId)
+    );
+    const snapshot = await getDocs(q);
+    const docs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Document));
+    return docs.sort((a, b) => {
+      const ta = a.createdAt?.toMillis?.() ?? 0;
+      const tb = b.createdAt?.toMillis?.() ?? 0;
+      return tb - ta;
+    });
+  }
 }
 
 export async function getDocumentById(id: string): Promise<Document | null> {
