@@ -130,24 +130,51 @@ export async function deleteDocument(id: string): Promise<void> {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/** Convert a Google Drive share link to an embed/viewer URL */
+/**
+ * Convert any Google Drive share/view/export URL into a clean embed (preview) URL.
+ * Handles:
+ *  - /file/d/ID/view?usp=sharing
+ *  - /file/d/ID/preview  (already correct — returned as-is)
+ *  - /open?id=ID
+ *  - /uc?id=ID  (download/export links)
+ *  - https://drive.google.com/file/d/ID  (bare)
+ *  - https://docs.google.com/document/d/ID/edit  (Docs/Sheets/Slides — rare but handled)
+ */
 export function convertDriveLink(url: string): string {
-  // File share link: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-  const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  const trimmed = url.trim();
+
+  // 1. Already a preview — normalise by stripping any extra query params after "preview"
+  if (trimmed.includes('/preview')) {
+    const fileMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (fileMatch) {
+      return `https://drive.google.com/file/d/${fileMatch[1]}/preview`;
+    }
+    return trimmed; // non-standard preview URL — return as-is
+  }
+
+  // 2. Canonical /file/d/ID path (view, edit, or bare)
+  const fileMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
   if (fileMatch) {
     return `https://drive.google.com/file/d/${fileMatch[1]}/preview`;
   }
 
-  // Open link: https://drive.google.com/open?id=FILE_ID
-  const openMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (openMatch) {
-    return `https://drive.google.com/file/d/${openMatch[1]}/preview`;
+  // 3. Open link: drive.google.com/open?id=ID
+  //    or export/download: drive.google.com/uc?id=ID or uc?export=download&id=ID
+  const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idParamMatch) {
+    return `https://drive.google.com/file/d/${idParamMatch[1]}/preview`;
   }
 
-  // Already an embed/preview link
-  if (url.includes('/preview')) return url;
+  // 4. Google Docs/Sheets/Slides — extract the document ID and wrap with Docs Viewer
+  //    e.g. https://docs.google.com/document/d/ID/edit
+  const docsMatch = trimmed.match(/docs\.google\.com\/(?:document|spreadsheets|presentation)\/d\/([a-zA-Z0-9_-]+)/);
+  if (docsMatch) {
+    // For Docs files, use the built-in preview
+    return `https://docs.google.com/file/d/${docsMatch[1]}/preview`;
+  }
 
-  return url;
+  // Fallback — return unchanged and let the viewer try
+  return trimmed;
 }
 
 /** Get document count per category */

@@ -13,20 +13,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Allow iframe from these origins
-  async headers() {
-    return [
-      {
-        source: '/read/:path*',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-        ],
-      },
-    ];
-  },
 };
 
 export default nextConfig;
