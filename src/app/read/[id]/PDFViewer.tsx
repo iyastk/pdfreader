@@ -10,19 +10,19 @@ interface PDFViewerProps {
 }
 
 // Timeout before auto-advancing to next strategy (ms)
-const STRATEGY_TIMEOUT_MS = 12000;
+const STRATEGY_TIMEOUT_MS = 8000;
 // Max total time before showing manual controls
-const MAX_TOTAL_TIMEOUT_MS = 30000;
+const MAX_TOTAL_TIMEOUT_MS = 25000;
 
 /**
  * Viewer strategies in priority order for Drive links.
  *
- * 1. gview       – Google's lightweight viewer; most reliable for public PDFs
- * 2. drive_embed – Standard /preview embed (works when file allows embedding)
+ * 1. drive_embed – Standard /preview embed (fastest when it works)
+ * 2. gview       – Google's lightweight viewer (most reliable fallback)
  * 3. docs_viewer – Google Docs Viewer wrapping a direct download URL
  */
-type DriveStrategy = 'gview' | 'drive_embed' | 'docs_viewer';
-const DRIVE_STRATEGIES: DriveStrategy[] = ['gview', 'drive_embed', 'docs_viewer'];
+type DriveStrategy = 'drive_embed' | 'gview' | 'docs_viewer';
+const DRIVE_STRATEGIES: DriveStrategy[] = ['drive_embed', 'gview', 'docs_viewer'];
 
 function getDriveFileId(url: string): string | null {
   const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
