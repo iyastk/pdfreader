@@ -13,13 +13,22 @@ import {
 } from 'lucide-react';
 import { Document, Category } from '@/types';
 import { getDocuments, getCategories, deleteDocument } from '@/lib/firestore';
-import { Timestamp } from 'firebase/firestore';
 
-function formatDate(ts: Timestamp | undefined) {
+function formatDate(ts: unknown) {
   if (!ts) return '—';
-  return ts.toDate().toLocaleDateString('en-IN', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
+  if (typeof ts === 'object' && ts !== null) {
+    if ('toDate' in ts && typeof (ts as Record<string, unknown>).toDate === 'function') {
+      return (ts as { toDate: () => Date }).toDate().toLocaleDateString('en-IN', {
+        day: 'numeric', month: 'short', year: 'numeric',
+      });
+    }
+    if ('seconds' in ts) {
+      return new Date((ts as { seconds: number }).seconds * 1000).toLocaleDateString('en-IN', {
+        day: 'numeric', month: 'short', year: 'numeric',
+      });
+    }
+  }
+  return '—';
 }
 
 export default function DocumentList() {

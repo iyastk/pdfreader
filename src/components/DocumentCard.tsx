@@ -3,15 +3,24 @@
 import Link from 'next/link';
 import { FileText, ExternalLink, Eye, Clock } from 'lucide-react';
 import { Document } from '@/types';
-import { Timestamp } from 'firebase/firestore';
 
 interface DocumentCardProps {
   document: Document;
 }
 
-function formatDate(ts: Timestamp | undefined) {
+function formatDate(ts: unknown) {
   if (!ts) return '';
-  return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  // Handle both real Firestore Timestamps (with .toDate()) and
+  // plain objects serialized across the RSC boundary ({seconds, nanoseconds}).
+  if (typeof ts === 'object' && ts !== null) {
+    if ('toDate' in ts && typeof (ts as Record<string, unknown>).toDate === 'function') {
+      return (ts as { toDate: () => Date }).toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    if ('seconds' in ts) {
+      return new Date((ts as { seconds: number }).seconds * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+  }
+  return '';
 }
 
 export default function DocumentCard({ document: doc }: DocumentCardProps) {
