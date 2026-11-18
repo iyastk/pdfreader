@@ -25,35 +25,40 @@ export default function CategoryCard({ id, name, documentCount, index }: Categor
   const theme = THEMES[index % THEMES.length];
 
   return (
-    <Link href={`/category/${id}`} className="group block fade-up" style={{ animationDelay: `${index * 60}ms` }}>
+    <Link
+      href={`/category/${id}`}
+      className="group block fade-up rounded-xl sm:rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-2 focus-visible:outline-none"
+      style={{ animationDelay: `${index * 60}ms` }}
+      aria-label={`${name}, ${documentCount} ${documentCount === 1 ? 'document' : 'documents'}`}
+    >
       <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-white border border-slate-100 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-slate-200/60 hover:border-slate-200 active:scale-[0.97]">
 
         {/* Gradient header */}
-        <div className={`bg-gradient-to-br ${theme.from} ${theme.to} p-4 sm:p-5`}>
-          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-inner">
-            <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-white" strokeWidth={2} />
+        <div className={`bg-gradient-to-br ${theme.from} ${theme.to} p-3.5 sm:p-5`}>
+          <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-inner">
+            <BookOpen className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" strokeWidth={2} />
           </div>
         </div>
 
         {/* Curved wave */}
         <div
-          className={`absolute left-0 right-0 h-5 bg-gradient-to-br ${theme.from} ${theme.to} opacity-90`}
-          style={{ top: 'calc(3.5rem + 8px)', clipPath: 'ellipse(58% 100% at 50% 0%)' }}
+          className={`absolute left-0 right-0 h-4 sm:h-5 bg-gradient-to-br ${theme.from} ${theme.to} opacity-90`}
+          style={{ top: 'calc(3rem + 4px)', clipPath: 'ellipse(58% 100% at 50% 0%)' }}
         />
 
         {/* Content */}
-        <div className="px-3.5 sm:px-5 pb-4 sm:pb-5 pt-3">
-          <h3 className="mt-1.5 text-sm sm:text-base font-bold text-slate-800 group-hover:text-indigo-600 transition-colors duration-200 line-clamp-2 leading-snug">
+        <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2.5">
+          <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors duration-200 line-clamp-2 leading-tight">
             {name}
           </h3>
 
-          <div className="mt-2.5 flex items-center justify-between">
+          <div className="mt-2 flex items-center justify-between">
             <div className="flex items-center gap-1 text-slate-400">
-              <FileText className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium">{documentCount} {documentCount === 1 ? 'doc' : 'docs'}</span>
+              <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              <span className="text-[11px] sm:text-xs font-semibold">{documentCount} {documentCount === 1 ? 'doc' : 'docs'}</span>
             </div>
             <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-100 transition-all group-hover:bg-indigo-50 group-hover:border-indigo-100">
-              <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-indigo-500 transition-all group-hover:translate-x-0.5" />
+              <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-400 group-hover:text-indigo-500 transition-all group-hover:translate-x-0.5" />
             </div>
           </div>
         </div>

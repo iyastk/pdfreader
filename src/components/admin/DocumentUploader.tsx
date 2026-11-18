@@ -88,7 +88,7 @@ export default function DocumentUploader() {
       </h2>
 
       {/* Mode tabs */}
-      <div className="mb-6 flex rounded-xl bg-gray-100 p-1">
+      <div className="mb-4 flex rounded-xl bg-gray-100 p-1">
         <button
           type="button"
           onClick={() => setMode('upload')}
@@ -109,6 +109,20 @@ export default function DocumentUploader() {
           <Link2 className="h-4 w-4" />
           Google Drive Link
         </button>
+      </div>
+
+      {/* Auto-import suggestion */}
+      <div className="mb-6 flex items-center justify-between rounded-xl border border-indigo-100 bg-indigo-50/70 p-3 text-xs text-indigo-900">
+        <span className="flex items-center gap-2">
+          <span className="text-base">✨</span>
+          <span>Have a webpage with many links or question papers?</span>
+        </span>
+        <a
+          href="/admin/import"
+          className="font-bold text-indigo-600 hover:text-indigo-800 transition underline underline-offset-2 flex-shrink-0 ml-2"
+        >
+          Use Auto-Importer →
+        </a>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

@@ -5,7 +5,7 @@ import { getDocumentById, getCategoryById } from '@/lib/firestore';
 import { ArrowLeft, ExternalLink, Download } from 'lucide-react';
 import PDFViewer from './PDFViewer';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -29,7 +29,7 @@ export default async function ReadPage({ params }: Props) {
 
   return (
     <div
-      className="flex h-screen flex-col bg-slate-950"
+      className="flex h-screen h-[100dvh] flex-col bg-slate-950 overflow-hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       {/* ── Top bar ───────────────────────────────── */}
@@ -44,16 +44,16 @@ export default async function ReadPage({ params }: Props) {
         {/* Back */}
         <Link
           href={`/category/${document.categoryId}`}
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-800/60 text-slate-400 transition-all hover:bg-slate-700 hover:text-white hover:border-slate-600 active:scale-95"
-          aria-label="Go back"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-800/60 text-slate-300 transition-all hover:bg-slate-700 hover:text-white hover:border-slate-600 active:scale-95 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
+          aria-label="Back to subject documents"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         </Link>
 
         {/* Title */}
         <div className="min-w-0 flex-1 px-1">
           {category && (
-            <p className="hidden text-[10px] font-medium text-slate-500 sm:block truncate">
+            <p className="hidden text-[10px] font-medium text-slate-400 sm:block truncate">
               {category.name}
             </p>
           )}
@@ -70,10 +70,10 @@ export default async function ReadPage({ params }: Props) {
               download
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-9 w-9 sm:w-auto sm:px-3 items-center justify-center sm:gap-1.5 rounded-xl border border-slate-700/60 bg-slate-800/60 text-xs font-medium text-slate-300 transition-all hover:bg-slate-700 hover:text-white active:scale-95"
-              aria-label="Download"
+              className="flex h-9 w-9 sm:w-auto sm:px-3 items-center justify-center sm:gap-1.5 rounded-xl border border-slate-700/60 bg-slate-800/60 text-xs font-medium text-slate-300 transition-all hover:bg-slate-700 hover:text-white active:scale-95 focus-visible:ring-2 focus-visible:ring-indigo-500"
+              aria-label="Download PDF file"
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">Download</span>
             </a>
           )}
@@ -81,19 +81,19 @@ export default async function ReadPage({ params }: Props) {
             href={document.fileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-9 w-9 sm:w-auto sm:px-3 items-center justify-center sm:gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-xs font-semibold text-white shadow-sm shadow-indigo-900/30 transition-all hover:shadow-md hover:shadow-indigo-700/40 active:scale-95"
-            aria-label="Open in new tab"
+            className="flex h-9 w-9 sm:w-auto sm:px-3 items-center justify-center sm:gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-xs font-semibold text-white shadow-sm shadow-indigo-900/30 transition-all hover:shadow-md hover:shadow-indigo-700/40 active:scale-95 focus-visible:ring-2 focus-visible:ring-indigo-500"
+            aria-label="Open document in external tab"
           >
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">Open</span>
           </a>
         </div>
       </header>
 
       {/* ── PDF Viewer ───────────────────────────── */}
-      <div className="flex-1 overflow-hidden">
+      <main id="main-content" tabIndex={-1} className="flex-1 overflow-hidden focus:outline-none">
         <PDFViewer url={document.fileUrl} type={document.type} title={document.title} />
-      </div>
+      </main>
     </div>
   );
 }

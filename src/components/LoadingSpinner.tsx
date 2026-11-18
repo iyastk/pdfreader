@@ -8,10 +8,12 @@ export default function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | '
   }[size];
 
   return (
-    <div className="flex items-center justify-center">
+    <div role="status" aria-label="Loading" className="flex items-center justify-center">
       <div
         className={`${sizeClass} animate-spin rounded-full border-indigo-500 border-t-transparent`}
+        aria-hidden="true"
       />
+      <span className="sr-only">Loading…</span>
     </div>
   );
 }

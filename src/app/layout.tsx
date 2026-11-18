@@ -1,11 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
-import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
+import { SearchProvider } from '@/context/SearchContext';
+import { PWAProvider } from '@/context/PWAContext';
 import MobileBottomNav from '@/components/MobileBottomNav';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'SSLC Reader — Study Smarter',
@@ -29,8 +27,6 @@ export const viewport: Viewport = {
   themeColor: '#4f46e5',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: 'cover',
 };
 
@@ -43,11 +39,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={inter.className}>
+      <body className="antialiased min-h-screen">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-indigo-600 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Skip to main content
+        </a>
         <AuthProvider>
-          <ServiceWorkerRegistrar />
-          {children}
-          <MobileBottomNav />
+          <PWAProvider>
+            <SearchProvider>
+              {children}
+              <MobileBottomNav />
+            </SearchProvider>
+          </PWAProvider>
         </AuthProvider>
       </body>
     </html>

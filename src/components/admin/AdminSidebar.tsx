@@ -1,17 +1,26 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import {
-  LayoutDashboard, FolderOpen, Upload, FileText, LogOut, BookOpen, X, Menu,
+  LayoutDashboard,
+  FolderOpen,
+  Upload,
+  FileText,
+  LogOut,
+  BookOpen,
+  X,
+  Menu,
+  Globe,
 } from 'lucide-react';
-import { useState } from 'react';
 
 const NAV_ITEMS = [
   { href: '/admin',            label: 'Dashboard',     icon: LayoutDashboard },
   { href: '/admin/categories', label: 'Categories',    icon: FolderOpen },
   { href: '/admin/upload',     label: 'Upload PDF',    icon: Upload },
+  { href: '/admin/import',     label: 'Auto Importer', icon: Globe },
   { href: '/admin/documents',  label: 'All Documents', icon: FileText },
 ];
 
@@ -32,16 +41,18 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
         </div>
         {onClose && (
           <button
+            type="button"
             onClick={onClose}
-            className="ml-auto flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-800 hover:text-white transition-colors"
+            className="ml-auto flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-800 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
+            aria-label="Close navigation sidebar"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         )}
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-0.5 px-3 py-4">
+      <nav aria-label="Admin Navigation" className="flex-1 space-y-0.5 px-3 py-4">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const isActive = href === '/admin' ? pathname === '/admin' : pathname.startsWith(href);
           return (
@@ -49,13 +60,13 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
               key={href}
               href={href}
               onClick={onClose}
-              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-150 ${
+              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none ${
                 isActive
                   ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-900/30'
                   : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'
               }`}
             >
-              <Icon className="h-4 w-4 flex-shrink-0" />
+              <Icon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
               {label}
               {isActive && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white/60" />}
             </Link>

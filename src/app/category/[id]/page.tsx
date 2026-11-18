@@ -8,7 +8,7 @@ import { getCategoryById, getDocumentsByCategory } from '@/lib/firestore';
 import { ArrowLeft, FolderOpen, FileText } from 'lucide-react';
 import Link from 'next/link';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -35,22 +35,23 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-3xl px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-3xl px-3.5 py-4 sm:py-8 sm:px-6 lg:px-8 focus:outline-none">
 
         {/* Breadcrumb */}
-        <div className="mb-5 flex items-center gap-2 text-sm">
+        <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm">
           <Link
             href="/"
-            className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 -ml-2"
+            className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 -ml-2 focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:outline-none"
+            aria-label="Back to all subjects"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="font-medium">Subjects</span>
           </Link>
-          <span className="text-slate-300">/</span>
-          <span className="font-semibold text-slate-600 truncate max-w-[180px] sm:max-w-xs">
+          <span className="text-slate-300" aria-hidden="true">/</span>
+          <span className="font-semibold text-slate-700 truncate max-w-[180px] sm:max-w-xs" aria-current="page">
             {category.name}
           </span>
-        </div>
+        </nav>
 
         {/* Header card */}
         <div className="mb-6 flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 sm:p-5 shadow-sm">

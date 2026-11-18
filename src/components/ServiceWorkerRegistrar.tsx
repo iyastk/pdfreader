@@ -56,11 +56,14 @@ export default function ServiceWorkerRegistrar() {
 
   return (
     <div
+      role="dialog"
+      aria-labelledby="pwa-install-title"
+      aria-describedby="pwa-install-desc"
       className="fixed bottom-20 left-4 right-4 z-50 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm animate-slide-up"
     >
       <div className="flex items-center gap-3 rounded-2xl border border-indigo-200/60 bg-white/95 backdrop-blur-xl p-4 shadow-xl shadow-indigo-900/10">
         {/* Icon */}
-        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-300/40">
+        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-300/40" aria-hidden="true">
           <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4" />
           </svg>
@@ -68,21 +71,25 @@ export default function ServiceWorkerRegistrar() {
 
         {/* Text */}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-slate-800">Install SSLC Reader</p>
-          <p className="text-xs text-slate-500">Add to your home screen for quick access</p>
+          <p id="pwa-install-title" className="text-sm font-semibold text-slate-800">Install SSLC Reader</p>
+          <p id="pwa-install-desc" className="text-xs text-slate-500">Add to your home screen for instant access</p>
         </div>
 
         {/* Actions */}
         <div className="flex flex-shrink-0 items-center gap-2">
           <button
+            type="button"
             onClick={handleDismiss}
-            className="rounded-lg px-2 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-600 transition"
+            className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
+            aria-label="Dismiss install prompt"
           >
             Later
           </button>
           <button
+            type="button"
             onClick={handleInstall}
-            className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:shadow-md active:scale-95"
+            className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:shadow-md active:scale-95 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
+            aria-label="Install App now"
           >
             Install
           </button>

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, FolderPlus, FolderOpen, AlertCircle, Loader2 } from 'lucide-react';
 import { Category } from '@/types';
 import { getCategories, createCategory, deleteCategory } from '@/lib/firestore';
+import { revalidateCategoryPages } from '@/app/actions';
 
 export default function CategoryManager() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -35,6 +36,7 @@ export default function CategoryManager() {
     setError('');
     try {
       await createCategory(name);
+      await revalidateCategoryPages();
       setNewName('');
       await load();
     } catch {
@@ -49,6 +51,7 @@ export default function CategoryManager() {
     setDeletingId(id);
     try {
       await deleteCategory(id);
+      await revalidateCategoryPages();
       await load();
     } catch {
       setError('Failed to delete category.');

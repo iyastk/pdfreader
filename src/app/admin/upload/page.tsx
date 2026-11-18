@@ -16,3 +16,5 @@ export default function AdminUploadPage() {
     </div>
   );
 }
+
+export const dynamic = 'force-dynamic';

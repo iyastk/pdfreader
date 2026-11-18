@@ -14,3 +14,5 @@ export default function AdminCategoriesPage() {
     </div>
   );
 }
+
+export const dynamic = 'force-dynamic';

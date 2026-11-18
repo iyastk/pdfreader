@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Document, Category } from '@/types';
 import { getDocuments, getCategories, deleteDocument } from '@/lib/firestore';
+import { revalidateDocumentPages } from '@/app/actions';
 
 function formatDate(ts: unknown) {
   if (!ts) return '—';
@@ -61,7 +62,9 @@ export default function DocumentList() {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
     setDeletingId(id);
     try {
+      const docToDelete = documents.find((d) => d.id === id);
       await deleteDocument(id);
+      await revalidateDocumentPages(docToDelete?.categoryId);
       await load();
     } catch {
       setError('Failed to delete document.');

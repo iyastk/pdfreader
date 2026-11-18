@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { LayoutDashboard, FolderOpen, FileText, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, FileText, TrendingUp, Globe, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { getCategoriesWithCounts } from '@/lib/firestore';
 
 export const metadata: Metadata = { title: 'Dashboard — Admin | SSLC Reader' };
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboardPage() {
   let cats: Awaited<ReturnType<typeof getCategoriesWithCounts>> = [];
@@ -69,7 +69,22 @@ export default async function AdminDashboardPage() {
       {/* Quick actions */}
       <div>
         <h2 className="mb-4 text-lg font-semibold text-gray-800">Quick Actions</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Link
+            href="/admin/import"
+            className="group flex items-center gap-4 rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-50/50 to-purple-50/30 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:border-indigo-400"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-300 transition group-hover:scale-105">
+              <Globe className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 flex items-center gap-1.5">
+                Auto Importer
+                <span className="rounded-full bg-indigo-100 px-1.5 py-0.2 text-[9px] font-bold text-indigo-700">NEW</span>
+              </p>
+              <p className="text-xs text-gray-500">Extract links from any website</p>
+            </div>
+          </Link>
           <Link
             href="/admin/categories"
             className="group flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:border-indigo-200"

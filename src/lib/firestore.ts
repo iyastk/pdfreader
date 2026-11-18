@@ -10,6 +10,7 @@ import {
   orderBy,
   serverTimestamp,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { Category, Document } from '@/types';
@@ -115,6 +116,39 @@ export async function createDocument(data: {
     createdAt: serverTimestamp(),
   });
   return docRef.id;
+}
+
+export async function createDocumentsBatch(
+  documents: Array<{
+    title: string;
+    categoryId: string;
+    type: 'firebase_upload' | 'drive_link';
+    fileUrl: string;
+  }>
+): Promise<number> {
+  if (documents.length === 0) return 0;
+  // Firestore batch limit is 500 operations
+  const CHUNK_SIZE = 450;
+  let totalSaved = 0;
+
+  for (let i = 0; i < documents.length; i += CHUNK_SIZE) {
+    const chunk = documents.slice(i, i + CHUNK_SIZE);
+    const batch = writeBatch(db);
+    const docsCol = collection(db, 'documents');
+
+    for (const item of chunk) {
+      const docRef = doc(docsCol);
+      batch.set(docRef, {
+        ...item,
+        createdAt: serverTimestamp(),
+      });
+    }
+
+    await batch.commit();
+    totalSaved += chunk.length;
+  }
+
+  return totalSaved;
 }
 
 export async function updateDocument(
