@@ -40,6 +40,13 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Listen for skip waiting messages from the UI
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // Fetch: Strategy router
 self.addEventListener('fetch', (event) => {
   const req = event.request;
