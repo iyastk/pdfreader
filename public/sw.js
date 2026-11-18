@@ -1,8 +1,9 @@
-// Enhanced Service Worker for SSLC Reader
-// Fast stale-while-revalidate for pages + cache-first for static immutable assets
+// Enhanced Service Worker for SSLC Reader (v3)
+// Network-First for HTML navigation to prevent stale CSS hash mismatches
+// Cache-First for versioned immutable static assets (_next/static)
 
-const CACHE_NAME = 'sslc-reader-v2';
-const STATIC_CACHE_NAME = 'sslc-reader-static-v2';
+const CACHE_NAME = 'sslc-reader-v3';
+const STATIC_CACHE_NAME = 'sslc-reader-static-v3';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -22,13 +23,14 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate: clean up older caches
+// Activate: purge all old caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME && key !== STATIC_CACHE_NAME) {
+            console.log('[SW] Purging old cache:', key);
             return caches.delete(key);
           }
         })
@@ -50,7 +52,8 @@ self.addEventListener('fetch', (event) => {
   if (
     url.hostname.includes('firestore.googleapis.com') ||
     url.hostname.includes('identitytoolkit') ||
-    url.hostname.includes('firebaseapp.com')
+    url.hostname.includes('firebaseapp.com') ||
+    url.hostname.includes('googleapis.com')
   ) {
     return;
   }
@@ -61,35 +64,36 @@ self.addEventListener('fetch', (event) => {
       caches.open(STATIC_CACHE_NAME).then(async (cache) => {
         const cached = await cache.match(req);
         if (cached) return cached;
-        const res = await fetch(req);
-        if (res.ok) cache.put(req, res.clone());
-        return res;
+        try {
+          const res = await fetch(req);
+          if (res.ok) cache.put(req, res.clone());
+          return res;
+        } catch {
+          return new Response('', { status: 404 });
+        }
       })
     );
     return;
   }
 
-  // HTML page navigations: Stale-While-Revalidate with network fallback
+  // HTML page navigations: Network-First with Cache Fallback
+  // This guarantees phones always receive the matching CSS hash when online!
   if (req.mode === 'navigate') {
     event.respondWith(
-      caches.open(CACHE_NAME).then(async (cache) => {
-        const cached = await cache.match(req);
-
-        const networkFetch = fetch(req)
-          .then((networkRes) => {
-            if (networkRes.ok) {
-              cache.put(req, networkRes.clone());
-            }
-            return networkRes;
-          })
-          .catch(() => {
-            // If offline and page not cached, fallback to root page
-            return cached || cache.match('/');
-          });
-
-        // If we have cached version, return immediately while revalidating
-        return cached || networkFetch;
-      })
+      fetch(req)
+        .then(async (networkRes) => {
+          if (networkRes.ok) {
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(req, networkRes.clone());
+          }
+          return networkRes;
+        })
+        .catch(async () => {
+          // Offline fallback
+          const cache = await caches.open(CACHE_NAME);
+          const cached = await cache.match(req);
+          return cached || cache.match('/') || Response.error();
+        })
     );
     return;
   }

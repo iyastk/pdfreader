@@ -20,179 +20,217 @@ export default function MobileBottomNav() {
   const isCategoryActive = pathname.startsWith('/category');
   const isHubActive = pathname.startsWith('/portal');
 
+  // Common button/link style to guarantee 100% width & center alignment even without any CSS file
+  const itemStyle: React.CSSProperties = {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    padding: '4px 0',
+    textDecoration: 'none',
+    border: 'none',
+    background: 'transparent',
+    cursor: 'pointer',
+    WebkitTapHighlightColor: 'transparent',
+    userSelect: 'none',
+    boxSizing: 'border-box',
+  };
+
+  const labelStyle = (active: boolean): React.CSSProperties => ({
+    fontSize: '10.5px',
+    fontWeight: '700',
+    lineHeight: '1',
+    marginTop: '3px',
+    textAlign: 'center',
+    color: active ? '#4338ca' : '#64748b',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+  });
+
+  const activeBar: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    height: '3px',
+    width: '30px',
+    borderRadius: '999px',
+    backgroundColor: '#4f46e5',
+  };
+
   return (
     <nav
       role="navigation"
       aria-label="Mobile Bottom Navigation"
-      className="mobile-bottom-nav fixed bottom-0 inset-x-0 z-50 w-full"
+      className="mobile-bottom-nav"
       style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.98)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderTop: '1px solid rgba(226, 232, 240, 0.9)',
-        boxShadow: '0 -4px 20px rgba(79, 70, 229, 0.06)',
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: '100%',
+        zIndex: 9999,
+        backgroundColor: '#ffffff',
+        borderTop: '1px solid #e2e8f0',
+        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.06)',
         paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 6px)',
+        boxSizing: 'border-box',
       }}
     >
       <div
-        className="mx-auto"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 1fr)',
           width: '100%',
           maxWidth: '520px',
           height: '56px',
+          margin: '0 auto',
           alignItems: 'center',
+          boxSizing: 'border-box',
         }}
       >
         {/* 1. Home */}
-        <Link
-          href="/"
-          className="relative flex flex-col items-center justify-center h-full w-full py-1 transition-all active:scale-95 select-none"
-          style={{ color: isHomeActive && !isCategoryActive && !isHubActive ? '#4f46e5' : '#64748b' }}
-          aria-label="Home"
-        >
-          {isHomeActive && !isCategoryActive && !isHubActive && (
-            <span
-              className="absolute top-0 h-1 w-8 rounded-full bg-indigo-600 shadow-sm shadow-indigo-300"
-              style={{
-                background: 'linear-gradient(90deg, #4f46e5, #7c3aed)',
-              }}
-            />
-          )}
+        <Link href="/" style={itemStyle} aria-label="Home">
+          {isHomeActive && !isCategoryActive && !isHubActive && <span style={activeBar} />}
           <div
-            className={`flex items-center justify-center rounded-xl p-1 transition-all ${
-              isHomeActive && !isCategoryActive && !isHubActive ? 'bg-indigo-50/80' : ''
-            }`}
-          >
-            <Home
-              size={20}
-              strokeWidth={isHomeActive && !isCategoryActive && !isHubActive ? 2.5 : 1.9}
-            />
-          </div>
-          <span
-            className="text-[10.5px] font-bold tracking-tight leading-none mt-0.5"
             style={{
-              color: isHomeActive && !isCategoryActive && !isHubActive ? '#4338ca' : '#64748b',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '12px',
+              padding: '3px 8px',
+              backgroundColor: isHomeActive && !isCategoryActive && !isHubActive ? '#eef2ff' : 'transparent',
+              color: isHomeActive && !isCategoryActive && !isHubActive ? '#4f46e5' : '#64748b',
             }}
           >
-            Home
-          </span>
+            <Home size={20} strokeWidth={isHomeActive && !isCategoryActive && !isHubActive ? 2.5 : 1.9} />
+          </div>
+          <span style={labelStyle(isHomeActive && !isCategoryActive && !isHubActive)}>Home</span>
         </Link>
 
         {/* 2. Subjects */}
-        <Link
-          href="/#subjects"
-          className="relative flex flex-col items-center justify-center h-full w-full py-1 transition-all active:scale-95 select-none"
-          style={{ color: isCategoryActive ? '#4f46e5' : '#64748b' }}
-          aria-label="Subjects"
-        >
-          {isCategoryActive && (
-            <span
-              className="absolute top-0 h-1 w-8 rounded-full bg-indigo-600 shadow-sm shadow-indigo-300"
-              style={{
-                background: 'linear-gradient(90deg, #4f46e5, #7c3aed)',
-              }}
-            />
-          )}
+        <Link href="/#subjects" style={itemStyle} aria-label="Subjects">
+          {isCategoryActive && <span style={activeBar} />}
           <div
-            className={`flex items-center justify-center rounded-xl p-1 transition-all ${
-              isCategoryActive ? 'bg-indigo-50/80' : ''
-            }`}
-          >
-            <BookOpen
-              size={20}
-              strokeWidth={isCategoryActive ? 2.5 : 1.9}
-            />
-          </div>
-          <span
-            className="text-[10.5px] font-bold tracking-tight leading-none mt-0.5"
             style={{
-              color: isCategoryActive ? '#4338ca' : '#64748b',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '12px',
+              padding: '3px 8px',
+              backgroundColor: isCategoryActive ? '#eef2ff' : 'transparent',
+              color: isCategoryActive ? '#4f46e5' : '#64748b',
             }}
           >
-            Subjects
-          </span>
+            <BookOpen size={20} strokeWidth={isCategoryActive ? 2.5 : 1.9} />
+          </div>
+          <span style={labelStyle(isCategoryActive)}>Subjects</span>
         </Link>
 
         {/* 3. SSLC Hub / Portal */}
-        <Link
-          href="/portal"
-          className="relative flex flex-col items-center justify-center h-full w-full py-1 transition-all active:scale-95 select-none"
-          style={{ color: isHubActive ? '#4f46e5' : '#64748b' }}
-          aria-label="SSLC Resource Hub"
-        >
-          {isHubActive && (
-            <span
-              className="absolute top-0 h-1 w-8 rounded-full bg-indigo-600 shadow-sm shadow-indigo-300"
-              style={{
-                background: 'linear-gradient(90deg, #4f46e5, #7c3aed)',
-              }}
-            />
-          )}
+        <Link href="/portal" style={itemStyle} aria-label="SSLC Resource Hub">
+          {isHubActive && <span style={activeBar} />}
           <div
-            className={`relative flex items-center justify-center rounded-xl p-1 transition-all ${
-              isHubActive ? 'bg-indigo-50/80' : ''
-            }`}
-          >
-            <GraduationCap
-              size={21}
-              strokeWidth={isHubActive ? 2.5 : 1.9}
-            />
-            {/* New badge dot */}
-            <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-indigo-600 ring-2 ring-white" />
-          </div>
-          <span
-            className="text-[10.5px] font-bold tracking-tight leading-none mt-0.5"
             style={{
-              color: isHubActive ? '#4338ca' : '#64748b',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '12px',
+              padding: '3px 8px',
+              backgroundColor: isHubActive ? '#eef2ff' : 'transparent',
+              color: isHubActive ? '#4f46e5' : '#64748b',
             }}
           >
-            Hub
-          </span>
+            <GraduationCap size={21} strokeWidth={isHubActive ? 2.5 : 1.9} />
+            <span
+              style={{
+                position: 'absolute',
+                top: '2px',
+                right: '4px',
+                width: '6px',
+                height: '6px',
+                borderRadius: '999px',
+                backgroundColor: '#4f46e5',
+                border: '1.5px solid #ffffff',
+              }}
+            />
+          </div>
+          <span style={labelStyle(isHubActive)}>Hub</span>
         </Link>
 
         {/* 4. Global Search */}
-        <button
-          type="button"
-          onClick={openSearch}
-          className="relative flex flex-col items-center justify-center h-full w-full py-1 text-slate-500 hover:text-indigo-600 transition-all active:scale-95 select-none"
-          aria-label="Search study materials"
-        >
-          <div className="flex items-center justify-center rounded-xl p-1">
+        <button type="button" onClick={openSearch} style={itemStyle} aria-label="Search study materials">
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '12px',
+              padding: '3px 8px',
+              color: '#64748b',
+            }}
+          >
             <Search size={20} strokeWidth={1.9} />
           </div>
-          <span className="text-[10.5px] font-bold tracking-tight leading-none text-slate-500 mt-0.5">
-            Search
-          </span>
+          <span style={labelStyle(false)}>Search</span>
         </button>
 
         {/* 5. Install App Button */}
         <button
           type="button"
           onClick={promptInstall}
-          className="relative flex flex-col items-center justify-center h-full w-full py-1 transition-all active:scale-95 select-none"
-          style={{ color: isInstalled ? '#059669' : '#4f46e5' }}
+          style={itemStyle}
           aria-label={isInstalled ? 'App is installed' : 'Install SSLC Reader App'}
         >
           {isInstalled ? (
             <>
-              <div className="flex items-center justify-center rounded-xl p-1 bg-emerald-50/60">
-                <CheckCircle2 size={20} strokeWidth={2.2} className="text-emerald-600" />
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '12px',
+                  padding: '3px 8px',
+                  backgroundColor: '#ecfdf5',
+                  color: '#059669',
+                }}
+              >
+                <CheckCircle2 size={20} strokeWidth={2.2} />
               </div>
-              <span className="text-[10.5px] font-bold tracking-tight leading-none text-emerald-700 mt-0.5">
-                Installed
-              </span>
+              <span style={{ ...labelStyle(false), color: '#059669' }}>Installed</span>
             </>
           ) : (
             <>
-              <div className="relative flex items-center justify-center rounded-xl p-1 bg-indigo-50/70">
-                <Download size={20} strokeWidth={2.2} className="text-indigo-600" />
-                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse" />
+              <div
+                style={{
+                  position: 'relative',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '12px',
+                  padding: '3px 8px',
+                  backgroundColor: '#eef2ff',
+                  color: '#4f46e5',
+                }}
+              >
+                <Download size={20} strokeWidth={2.2} />
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '1px',
+                    right: '3px',
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '999px',
+                    backgroundColor: '#ef4444',
+                    border: '1.5px solid #ffffff',
+                  }}
+                />
               </div>
-              <span className="text-[10.5px] font-bold tracking-tight leading-none text-indigo-700 mt-0.5">
-                Install
-              </span>
+              <span style={{ ...labelStyle(true), color: '#4338ca' }}>Install</span>
             </>
           )}
         </button>

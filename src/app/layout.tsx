@@ -38,6 +38,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        {/* Critical embedded CSS: renders instantly even on devices where external .css files fail or are restricted */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+              html, body { min-height: 100%; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f4ff; color: #0f172a; -webkit-tap-highlight-color: transparent; }
+              main { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important; }
+              .mobile-bottom-nav { display: block !important; position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; z-index: 9999 !important; }
+              @media (min-width: 769px) { .mobile-bottom-nav { display: none !important; } }
+            `,
+          }}
+        />
       </head>
       <body className="antialiased min-h-screen">
         <a
