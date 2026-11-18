@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, FileText } from 'lucide-react';
 
 interface CategoryCardProps {
   id: string;
@@ -9,17 +8,6 @@ interface CategoryCardProps {
   documentCount: number;
   index: number;
 }
-
-const THEMES = [
-  { from: 'from-indigo-600', to: 'to-indigo-700', bg: 'bg-indigo-50', text: 'text-indigo-600', ring: 'ring-indigo-100' },
-  { from: 'from-blue-600',   to: 'to-cyan-600',   bg: 'bg-blue-50',   text: 'text-blue-600',   ring: 'ring-blue-100' },
-  { from: 'from-emerald-600',to: 'to-teal-700',  bg: 'bg-emerald-50',text: 'text-emerald-600',ring: 'ring-emerald-100' },
-  { from: 'from-amber-600',  to: 'to-orange-700', bg: 'bg-amber-50',  text: 'text-amber-600',  ring: 'ring-amber-100' },
-  { from: 'from-rose-600',   to: 'to-pink-700',   bg: 'bg-rose-50',   text: 'text-rose-600',   ring: 'ring-rose-100' },
-  { from: 'from-violet-600', to: 'to-purple-700', bg: 'bg-violet-50', text: 'text-violet-600', ring: 'ring-violet-100' },
-  { from: 'from-teal-600',   to: 'to-emerald-700',bg: 'bg-teal-50',   text: 'text-teal-600',   ring: 'ring-teal-100' },
-  { from: 'from-fuchsia-600',to: 'to-pink-600',   bg: 'bg-fuchsia-50',text: 'text-fuchsia-600',ring: 'ring-fuchsia-100' },
-];
 
 function getSubjectEmoji(name: string): string {
   const upper = name.toUpperCase();
@@ -39,42 +27,34 @@ function getSubjectEmoji(name: string): string {
   return '📚';
 }
 
-export default function CategoryCard({ id, name, documentCount, index }: CategoryCardProps) {
-  const theme = THEMES[index % THEMES.length];
+export default function CategoryCard({ id, name, documentCount }: CategoryCardProps) {
   const emoji = getSubjectEmoji(name);
 
   return (
     <Link
       href={`/category/${id}`}
-      className="group block rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-2 focus-visible:outline-none transition-transform active:scale-[0.96]"
+      className="group flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs transition-all hover:border-indigo-400 hover:shadow-md active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:outline-none select-none min-h-[96px]"
       aria-label={`${name}, ${documentCount} study materials`}
     >
-      <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-4 shadow-sm transition-all duration-200 hover:border-indigo-300 hover:shadow-md hover:shadow-indigo-100/50 h-full min-h-[120px]">
-        
-        {/* Top row: Subject Emoji & Count Badge */}
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-xl shadow-xs group-hover:scale-105 transition-transform">
-            <span role="img" aria-label={name}>{emoji}</span>
-          </div>
-
-          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 border border-indigo-100/80 px-2 py-0.5 text-[11px] font-bold text-indigo-700">
-            <FileText className="h-3 w-3 text-indigo-500" />
-            <span>{documentCount}</span>
-          </span>
+      {/* Top: Icon + Document Count Pill */}
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-lg shadow-xs group-hover:scale-105 transition-transform">
+          <span role="img" aria-label={name}>{emoji}</span>
         </div>
 
-        {/* Bottom row: Subject Name & Arrow */}
-        <div className="flex items-end justify-between gap-1 pt-1 border-t border-slate-100">
-          <div className="min-w-0 flex-1">
-            <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-tight">
-              {name}
-            </h3>
-          </div>
+        <span className="inline-flex items-center rounded-lg bg-indigo-50 border border-indigo-100/90 px-2 py-0.5 text-[11px] font-bold text-indigo-700">
+          {documentCount}
+        </span>
+      </div>
 
-          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-slate-100/70 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-            <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </div>
-        </div>
+      {/* Bottom: Subject Name */}
+      <div className="w-full">
+        <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-1 leading-tight">
+          {name}
+        </h3>
+        <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+          {documentCount} {documentCount === 1 ? 'material' : 'materials'}
+        </p>
       </div>
     </Link>
   );
