@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 
 interface CategoryCardProps {
   id: string;
@@ -29,33 +30,37 @@ function getSubjectEmoji(name: string): string {
 
 export default function CategoryCard({ id, name, documentCount }: CategoryCardProps) {
   const emoji = getSubjectEmoji(name);
+  const isEmpty = documentCount === 0;
 
   return (
     <Link
       href={`/category/${id}`}
-      className="group flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs transition-all hover:border-indigo-400 hover:shadow-md active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:outline-none select-none min-h-[96px]"
+      className={`group flex items-center gap-2.5 rounded-2xl border p-2.5 sm:p-3 shadow-xs transition-all hover:shadow-md active:scale-[0.98] select-none ${
+        isEmpty
+          ? 'border-slate-100 bg-slate-50/70 opacity-60'
+          : 'border-slate-200/90 bg-white hover:border-indigo-300'
+      }`}
       aria-label={`${name}, ${documentCount} study materials`}
     >
-      {/* Top: Icon + Document Count Pill */}
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-lg shadow-xs group-hover:scale-105 transition-transform">
-          <span role="img" aria-label={name}>{emoji}</span>
-        </div>
-
-        <span className="inline-flex items-center rounded-lg bg-indigo-50 border border-indigo-100/90 px-2 py-0.5 text-[11px] font-bold text-indigo-700">
-          {documentCount}
-        </span>
+      {/* Icon badge */}
+      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-lg group-hover:scale-105 transition-transform">
+        <span role="img" aria-label={name}>{emoji}</span>
       </div>
 
-      {/* Bottom: Subject Name */}
-      <div className="w-full">
-        <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-1 leading-tight">
+      {/* Subject Name & Single Count */}
+      <div className="min-w-0 flex-1">
+        <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors truncate leading-tight">
           {name}
         </h3>
-        <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-          {documentCount} {documentCount === 1 ? 'material' : 'materials'}
+        <p className="text-[10px] text-slate-400 font-medium mt-0.5 truncate">
+          {isEmpty ? '0 papers' : `${documentCount} ${documentCount === 1 ? 'paper' : 'papers'}`}
         </p>
       </div>
+
+      {/* Subtle chevron */}
+      {!isEmpty && (
+        <ChevronRight className="h-3.5 w-3.5 text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+      )}
     </Link>
   );
 }

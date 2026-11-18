@@ -6,22 +6,28 @@ import {
   BookOpen,
   Search,
   ExternalLink,
-  ShieldCheck,
   Globe,
   ListOrdered,
   FileText,
   RotateCcw,
-  Sparkles,
   ChevronRight,
-  Filter,
-  ArrowUpRight,
-  CheckCircle,
+  CheckCircle2,
+  Bookmark,
 } from 'lucide-react';
 import { Category, Document } from '@/types';
 
 interface PortalClientProps {
   categories: Array<Category & { documentCount: number }>;
   documents: Document[];
+}
+
+function cleanDocumentTitle(title: string, categoryName: string): string {
+  let clean = title;
+  const catRegex = new RegExp(`sslc[-\\s]*${categoryName}[-\\s]*`, 'gi');
+  clean = clean.replace(catRegex, '');
+  clean = clean.replace(/\s*-\s*-\s*/g, ' - ').replace(/\s{2,}/g, ' ').trim();
+  if (clean.startsWith('- ')) clean = clean.substring(2);
+  return clean || title;
 }
 
 export default function PortalClient({ categories, documents }: PortalClientProps) {
@@ -70,7 +76,6 @@ export default function PortalClient({ categories, documents }: PortalClientProp
   const documentsByCategory = useMemo(() => {
     const map = new Map<string, { category: Category; docs: Document[] }>();
     
-    // Initialize for existing categories
     categories.forEach((cat) => {
       map.set(cat.id, { category: cat, docs: [] });
     });
@@ -85,7 +90,11 @@ export default function PortalClient({ categories, documents }: PortalClientProp
     return Array.from(map.values()).filter((item) => item.docs.length > 0);
   }, [categories, filteredDocuments]);
 
-  // Handle direct URL opening
+  // Only show categories that have documents in the subject pill list
+  const activeCategories = useMemo(() => {
+    return categories.filter((c) => c.documentCount > 0);
+  }, [categories]);
+
   const handleDirectUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!directUrl.trim()) return;
@@ -94,148 +103,132 @@ export default function PortalClient({ categories, documents }: PortalClientProp
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-3.5 py-4 sm:py-8 sm:px-6 lg:px-8">
-      {/* ── Top Header Banner ────────────────────────── */}
-      <div className="relative mb-6 overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-indigo-700 via-indigo-800 to-violet-900 p-4 sm:p-8 text-white shadow-xl shadow-indigo-300/30">
-        <div className="relative z-10">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-sm">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-              Family Link Safe
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold text-indigo-200 backdrop-blur-sm">
-              <Sparkles className="h-3.5 w-3.5 text-yellow-300" />
-              Aplusblog SSLC Portal
-            </span>
-          </div>
-
-          <h1 className="mb-2 text-2xl sm:text-4xl font-black tracking-tight text-white">
-            SSLC Resource Hub & Portal
+    <div className="mx-auto max-w-4xl px-3.5 py-3 sm:py-6 sm:px-6 focus:outline-none pb-24">
+      
+      {/* ── Minimalist Clean Header & Mode Switcher ──── */}
+      <div className="mb-3.5 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
+            SSLC Resource Hub
           </h1>
-          <p className="max-w-2xl text-xs sm:text-sm text-indigo-100/90 leading-relaxed">
-            All Kerala SSLC subject notes, model papers, 2026 exam answer keys & DIET modules arranged cleanly in one place. All files open directly in your in-app PDF reader without opening any external browser!
+          <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
+            {filteredDocuments.length} exam papers, keys & modules
           </p>
+        </div>
 
-          {/* Mode Switcher Tabs: Native segmented control style */}
-          <div className="mt-4 grid grid-cols-2 gap-1.5 rounded-2xl bg-black/20 p-1 backdrop-blur-md">
-            <button
-              type="button"
-              onClick={() => setActiveTab('directory')}
-              className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs sm:text-sm font-bold transition-all active:scale-[0.98] ${
-                activeTab === 'directory'
-                  ? 'bg-white text-indigo-900 shadow-md'
-                  : 'text-indigo-100 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <ListOrdered className="h-4 w-4 flex-shrink-0" />
-              <span className="truncate">Directory ({filteredDocuments.length})</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('webview')}
-              className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs sm:text-sm font-bold transition-all active:scale-[0.98] ${
-                activeTab === 'webview'
-                  ? 'bg-white text-indigo-900 shadow-md'
-                  : 'text-indigo-100 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <Globe className="h-4 w-4 flex-shrink-0" />
-              <span className="truncate">Live Page View</span>
-            </button>
-          </div>
+        {/* Tab Switcher: Segmented Control */}
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setActiveTab('directory')}
+            className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
+              activeTab === 'directory'
+                ? 'bg-white text-indigo-700 shadow-xs'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <ListOrdered className="h-3.5 w-3.5" />
+            <span>Directory</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('webview')}
+            className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
+              activeTab === 'webview'
+                ? 'bg-white text-indigo-700 shadow-xs'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Globe className="h-3.5 w-3.5" />
+            <span>Live Web</span>
+          </button>
         </div>
       </div>
 
       {/* ── TAB 1: CURATED DIRECTORY VIEW ─────────────── */}
       {activeTab === 'directory' && (
-        <div className="space-y-6">
-          {/* Search & Filter Toolbar */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-5 shadow-sm space-y-3.5">
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search notes, model papers, answer keys, DIET modules..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 bg-slate-200/60 rounded-full h-5 w-5 flex items-center justify-center"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            {/* Quick Type Filter Chips */}
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1 mr-1">
-                <Filter className="h-3 w-3" /> Filter:
-              </span>
-              {[
-                { id: 'all', label: 'All Materials' },
-                { id: 'qp', label: 'Question Papers' },
-                { id: 'key', label: 'Answer Keys' },
-                { id: 'model', label: 'Model Exams (Samagra)' },
-                { id: 'diet', label: 'DIET District Modules' },
-              ].map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setTypeFilter(f.id as typeof typeFilter)}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
-                    typeFilter === f.id
-                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Subject Selector Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-1 border-t border-slate-100">
+        <div className="space-y-4">
+          
+          {/* Search Input */}
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by topic, year, district..."
+              className="w-full rounded-xl border border-slate-200 bg-white pl-9 pr-8 py-2 text-xs sm:text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 shadow-xs"
+            />
+            {searchQuery && (
               <button
                 type="button"
-                onClick={() => setSelectedCategory('all')}
-                className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                  selectedCategory === 'all'
-                    ? 'bg-indigo-100 text-indigo-700 border border-indigo-300'
-                    : 'bg-slate-50 text-slate-600 border border-slate-200/80 hover:bg-slate-100'
-                }`}
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full h-5 w-5 flex items-center justify-center"
               >
-                All Subjects ({documents.length})
+                ✕
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                    selectedCategory === cat.id
-                      ? 'bg-indigo-100 text-indigo-700 border border-indigo-300'
-                      : 'bg-slate-50 text-slate-600 border border-slate-200/80 hover:bg-slate-100'
-                  }`}
-                >
-                  {cat.name} ({cat.documentCount})
-                </button>
-              ))}
-            </div>
+            )}
           </div>
 
-          {/* Grouped Document Cards by Category */}
+          {/* Type Filter Pills (Horizontal Scroll) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
+            {[
+              { id: 'all', label: `All (${documents.length})` },
+              { id: 'qp', label: 'Question Papers' },
+              { id: 'key', label: 'Answer Keys' },
+              { id: 'model', label: 'Model Exams (Samagra)' },
+              { id: 'diet', label: 'DIET Modules' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setTypeFilter(f.id as typeof typeFilter)}
+                className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-all ${
+                  typeFilter === f.id
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Subject Pills (Horizontal Scroll) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('all')}
+              className={`flex-shrink-0 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
+                selectedCategory === 'all'
+                  ? 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                  : 'bg-slate-50 text-slate-600 border border-slate-200/60 hover:bg-slate-100'
+              }`}
+            >
+              All Subjects
+            </button>
+            {activeCategories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`flex-shrink-0 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
+                  selectedCategory === cat.id
+                    ? 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                    : 'bg-slate-50 text-slate-600 border border-slate-200/60 hover:bg-slate-100'
+                }`}
+              >
+                {cat.name} ({cat.documentCount})
+              </button>
+            ))}
+          </div>
+
+          {/* ── Document List ─────────────────────────── */}
           {documentsByCategory.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center">
-              <BookOpen className="mx-auto h-12 w-12 text-slate-300 mb-3" />
-              <h3 className="text-base font-bold text-slate-700">No materials match your filter</h3>
-              <p className="text-xs text-slate-400 mt-1">Try clearing search or changing the subject filter</p>
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-center mt-4">
+              <BookOpen className="mx-auto h-10 w-10 text-slate-300 mb-2" />
+              <h3 className="text-sm font-bold text-slate-700">No materials match your filter</h3>
+              <p className="text-[11px] text-slate-400 mt-0.5">Try clearing your search query or filters</p>
               <button
                 type="button"
                 onClick={() => {
@@ -243,170 +236,155 @@ export default function PortalClient({ categories, documents }: PortalClientProp
                   setTypeFilter('all');
                   setSearchQuery('');
                 }}
-                className="mt-4 rounded-xl bg-indigo-50 px-4 py-2 text-xs font-semibold text-indigo-600 hover:bg-indigo-100"
+                className="mt-3 rounded-lg bg-indigo-50 px-3.5 py-1.5 text-xs font-bold text-indigo-600 hover:bg-indigo-100"
               >
-                Reset All Filters
+                Reset Filters
               </button>
             </div>
           ) : (
-            documentsByCategory.map(({ category, docs }) => (
-              <section key={category.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm">
-                <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-bold text-sm shadow-sm shadow-indigo-200">
-                      {category.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <h2 className="text-base sm:text-lg font-black text-slate-900 leading-tight">
+            <div className="space-y-4">
+              {documentsByCategory.map(({ category, docs }) => (
+                <div key={category.id} className="space-y-1.5">
+                  
+                  {/* Category Section Header */}
+                  <div className="flex items-center justify-between px-1 pt-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">
                         {category.name}
-                      </h2>
-                      <p className="text-[11px] text-slate-400">
-                        {docs.length} material{docs.length !== 1 ? 's' : ''} available
-                      </p>
+                      </span>
+                      <span className="rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold px-1.5 py-0.2">
+                        {docs.length}
+                      </span>
                     </div>
+
+                    <Link
+                      href={`/category/${category.id}`}
+                      className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5"
+                    >
+                      <span>View All</span>
+                      <ChevronRight className="h-3 w-3" />
+                    </Link>
                   </div>
 
-                  <Link
-                    href={`/category/${category.id}`}
-                    className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-lg transition"
-                  >
-                    <span>View All</span>
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
+                  {/* Clean List Tiles */}
+                  <div className="space-y-1.5">
+                    {docs.map((doc) => {
+                      const isKey = doc.title.toLowerCase().includes('answer');
+                      const isModel = doc.title.toLowerCase().includes('model') || doc.title.toLowerCase().includes('samagra');
+                      const isEM = doc.title.toUpperCase().includes('[EM]') || doc.title.toUpperCase().includes('EM ');
+                      const isMM = doc.title.toUpperCase().includes('[MM]') || doc.title.toUpperCase().includes('MM ');
+                      const isDIET = doc.title.toUpperCase().includes('DIET') || doc.title.toUpperCase().includes('MODULE');
+                      const cleanTitle = cleanDocumentTitle(doc.title, category.name);
 
-                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-                  {docs.map((doc) => {
-                    const isKey = doc.title.toLowerCase().includes('answer');
-                    const isQP = doc.title.toLowerCase().includes('question') || doc.title.toLowerCase().includes('exam');
-                    const isEM = doc.title.toUpperCase().includes('[EM]') || doc.title.toUpperCase().includes('EM ');
-                    const isMM = doc.title.toUpperCase().includes('[MM]') || doc.title.toUpperCase().includes('MM ');
-                    const isDIET = doc.title.toUpperCase().includes('DIET') || doc.title.toUpperCase().includes('MODULE');
-
-                    return (
-                      <Link
-                        key={doc.id}
-                        href={`/read/${doc.id}`}
-                        className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 transition-all hover:border-indigo-300 hover:bg-white hover:shadow-md active:scale-98"
-                      >
-                        <div>
-                          {/* Badges */}
-                          <div className="mb-2 flex flex-wrap items-center gap-1.5">
-                            {isKey && (
-                              <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
-                                Answer Key
-                              </span>
-                            )}
-                            {isQP && !isKey && (
-                              <span className="rounded-md bg-indigo-100 px-1.5 py-0.5 text-[10px] font-bold text-indigo-700">
-                                Question Paper
-                              </span>
-                            )}
-                            {isEM && (
-                              <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800">
-                                EM
-                              </span>
-                            )}
-                            {isMM && (
-                              <span className="rounded-md bg-purple-100 px-1.5 py-0.5 text-[10px] font-bold text-purple-800">
-                                MM
-                              </span>
-                            )}
-                            {isDIET && (
-                              <span className="rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-800">
-                                DIET
-                              </span>
+                      return (
+                        <Link
+                          key={doc.id}
+                          href={`/read/${doc.id}`}
+                          className="group flex items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white p-2.5 sm:p-3 shadow-xs hover:border-indigo-300 hover:shadow-sm active:scale-[0.99] transition-all select-none"
+                        >
+                          {/* Leading Icon */}
+                          <div
+                            className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border ${
+                              isKey
+                                ? 'bg-emerald-50 border-emerald-100 text-emerald-600'
+                                : isModel
+                                ? 'bg-violet-50 border-violet-100 text-violet-600'
+                                : 'bg-indigo-50 border-indigo-100 text-indigo-600'
+                            }`}
+                          >
+                            {isKey ? (
+                              <CheckCircle2 className="h-4.5 w-4.5" />
+                            ) : isModel ? (
+                              <Bookmark className="h-4.5 w-4.5" />
+                            ) : (
+                              <FileText className="h-4.5 w-4.5" />
                             )}
                           </div>
 
-                          <h3 className="line-clamp-2 text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors leading-snug">
-                            {doc.title}
-                          </h3>
-                        </div>
+                          {/* Content */}
+                          <div className="min-w-0 flex-1">
+                            {/* Badges */}
+                            <div className="flex items-center gap-1 mb-0.5 flex-wrap">
+                              {isKey ? (
+                                <span className="rounded bg-emerald-50 px-1.5 py-0.2 text-[9px] font-bold text-emerald-700">
+                                  Answer Key
+                                </span>
+                              ) : (
+                                <span className="rounded bg-indigo-50 px-1.5 py-0.2 text-[9px] font-bold text-indigo-700">
+                                  Question Paper
+                                </span>
+                              )}
+                              {isEM && (
+                                <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[9px] font-bold text-slate-700">
+                                  EM
+                                </span>
+                              )}
+                              {isMM && (
+                                <span className="rounded bg-amber-50 px-1.5 py-0.2 text-[9px] font-bold text-amber-800">
+                                  MM
+                                </span>
+                              )}
+                              {isDIET && (
+                                <span className="rounded bg-sky-50 px-1.5 py-0.2 text-[9px] font-bold text-sky-800">
+                                  DIET
+                                </span>
+                              )}
+                            </div>
 
-                        <div className="mt-3 flex items-center justify-between border-t border-slate-200/50 pt-2 text-[11px] text-indigo-600 font-bold">
-                          <span className="flex items-center gap-1">
-                            <FileText className="h-3 w-3 text-indigo-500" />
-                            Read In-App
-                          </span>
-                          <ArrowUpRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                        </div>
-                      </Link>
-                    );
-                  })}
+                            {/* Cleaned Title */}
+                            <p className="line-clamp-2 text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors leading-tight">
+                              {cleanTitle}
+                            </p>
+                          </div>
+
+                          {/* Trailing Arrow */}
+                          <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-              </section>
-            ))
+              ))}
+            </div>
           )}
         </div>
       )}
 
-      {/* ── TAB 2: LIVE IN-APP APLUSBLOG WEBVIEW ────────── */}
+      {/* ── TAB 2: LIVE WEB VIEW ──────────────────────── */}
       {activeTab === 'webview' && (
-        <div className="space-y-4">
-          {/* Safe Webview Toolbar */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-3.5 sm:p-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs sm:text-sm font-bold text-slate-800">
-                  Aplusblog SSLC Page (In-App Sandbox)
-                </span>
-                <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200">
-                  Family Link Approved
-                </span>
-              </div>
+        <div className="space-y-3">
+          {/* Quick Direct Drive Reader Bar */}
+          <form onSubmit={handleDirectUrlSubmit} className="flex gap-2">
+            <input
+              type="url"
+              value={directUrl}
+              onChange={(e) => setDirectUrl(e.target.value)}
+              placeholder="Paste any Google Drive or PDF link to open in reader..."
+              className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            />
+            <button
+              type="submit"
+              className="rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-indigo-700 active:scale-95 transition"
+            >
+              Read
+            </button>
+            <button
+              type="button"
+              onClick={() => setIframeKey((k) => k + 1)}
+              className="rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-slate-600 hover:bg-slate-50 transition"
+              title="Reload portal"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </button>
+          </form>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIframeKey((k) => k + 1)}
-                  className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition active:scale-95"
-                >
-                  <RotateCcw className="h-3.5 w-3.5 text-slate-500" />
-                  Reload Page
-                </button>
-                <a
-                  href="https://www.aplusblog.in/p/sslc_15.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 rounded-xl bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Original Link
-                </a>
-              </div>
-            </div>
-
-            {/* Quick URL Reader Form */}
-            <form onSubmit={handleDirectUrlSubmit} className="mt-3 flex flex-col sm:flex-row items-center gap-2 pt-3 border-t border-slate-100">
-              <label htmlFor="direct-drive-input" className="text-xs font-semibold text-slate-600 flex-shrink-0">
-                Open Drive/PDF Link in Reader:
-              </label>
-              <input
-                id="direct-drive-input"
-                type="url"
-                value={directUrl}
-                onChange={(e) => setDirectUrl(e.target.value)}
-                placeholder="Paste any Google Drive or PDF link here..."
-                className="w-full sm:flex-1 rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-              />
-              <button
-                type="submit"
-                className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:opacity-95 transition"
-              >
-                Read In App
-              </button>
-            </form>
-          </div>
-
-          {/* Embedded Web View Container */}
-          <div className="relative w-full rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-md">
+          {/* Sandbox iframe */}
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
             <iframe
               key={iframeKey}
               src="https://www.aplusblog.in/p/sslc_15.html"
-              title="Aplusblog SSLC Resource Portal"
-              className="w-full h-[78vh] min-h-[550px] border-0"
+              title="Aplusblog SSLC Portal"
+              className="w-full h-[70vh] sm:h-[80vh] border-0"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
               loading="lazy"
             />
@@ -416,4 +394,3 @@ export default function PortalClient({ categories, documents }: PortalClientProp
     </div>
   );
 }
-
