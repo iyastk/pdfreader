@@ -2,13 +2,40 @@
 
 import { useState, useEffect, useRef, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, X, BookOpen, FileText, ArrowRight, CornerDownLeft, Loader2 } from 'lucide-react';
+import {
+  Search,
+  X,
+  ArrowLeft,
+  FileText,
+  ChevronRight,
+  Loader2,
+  CheckCircle2,
+  Bookmark,
+} from 'lucide-react';
 import { Category, Document } from '@/types';
 import { getCategories, getDocuments } from '@/lib/firestore';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+function getSubjectEmoji(name: string): string {
+  const upper = name.toUpperCase();
+  if (upper.includes('MATH')) return '📐';
+  if (upper.includes('PHYSIC')) return '⚡';
+  if (upper.includes('CHEM')) return '🧪';
+  if (upper.includes('BIOLOG')) return '🧬';
+  if (upper.includes('SOCIAL') || upper.includes('HIST')) return '🏛️';
+  if (upper.includes('GEOG')) return '🌍';
+  if (upper.includes('ENGL')) return '📖';
+  if (upper.includes('HINDI')) return '✍️';
+  if (upper.includes('MALAYALAM') || upper.includes('PADAVALI')) return '🌴';
+  if (upper.includes('ARABIC')) return '📜';
+  if (upper.includes('URDU')) return '✒️';
+  if (upper.includes('SANSKRIT')) return '🕉️';
+  if (upper.includes('ICT')) return '💻';
+  return '📚';
 }
 
 export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
@@ -50,7 +77,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
     // Auto-focus input after render
     const timer = setTimeout(() => {
       inputRef.current?.focus();
-    }, 50);
+    }, 60);
 
     return () => {
       active = false;
@@ -114,7 +141,16 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, results, selectedIndex]);
 
-  // Keep selected index in bounds when results change
+  // Scroll active item into view
+  useEffect(() => {
+    if (!listRef.current) return;
+    const selectedEl = listRef.current.querySelector('[aria-selected="true"]');
+    if (selectedEl) {
+      selectedEl.scrollIntoView({ block: 'nearest' });
+    }
+  }, [selectedIndex]);
+
+  // Reset selected index when query changes
   useEffect(() => {
     setSelectedIndex(0);
   }, [cleanQuery]);
@@ -137,7 +173,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
       role="dialog"
       aria-modal="true"
       aria-label="Search study materials"
-      className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-12 sm:pt-20"
+      className="fixed inset-0 z-50 flex items-start justify-center p-0 sm:p-4 sm:pt-16"
     >
       {/* Backdrop */}
       <div
@@ -146,118 +182,180 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
         aria-hidden="true"
       />
 
-      {/* Modal Dialog */}
-      <div className="relative w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-900/10 focus-visible:outline-none">
-        {/* Search Input Bar */}
-        <div className="relative flex items-center border-b border-slate-100 px-4 py-3 sm:px-5">
-          <Search className="h-5 w-5 text-indigo-500 flex-shrink-0" aria-hidden="true" />
-          <label htmlFor="global-search-input" className="sr-only">
-            Search all subjects, notes, and PDF papers
-          </label>
-          <input
-            id="global-search-input"
-            ref={inputRef}
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search subjects, question papers, notes..."
-            className="w-full bg-transparent px-3 py-1.5 text-base text-slate-900 placeholder:text-slate-400 outline-none"
-            autoComplete="off"
-            spellCheck="false"
-          />
+      {/* Search Container: Full screen on mobile with safe-area padding; Floating modal on desktop */}
+      <div
+        className="relative w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-xl bg-white sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden focus-visible:outline-none z-10"
+        style={{
+          paddingTop: 'max(env(safe-area-inset-top, 0px), 10px)',
+          paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)',
+        }}
+      >
+        {/* ── Top Bar: Back Button + Spacious Search Bar ── */}
+        <div className="flex items-center gap-2.5 border-b border-slate-100 px-3.5 py-3 sm:px-5">
+          {/* Back Arrow button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 active:scale-95 transition flex-shrink-0"
+            aria-label="Close search"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
 
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-slate-400" aria-hidden="true" />
-          ) : query ? (
-            <button
-              type="button"
-              onClick={() => {
-                setQuery('');
-                inputRef.current?.focus();
-              }}
-              className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition"
-              aria-label="Clear search input"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          ) : (
-            <kbd className="hidden sm:inline-flex items-center rounded border border-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400">
-              ESC
-            </kbd>
-          )}
+          {/* Search Input Box */}
+          <div className="relative flex-1 flex items-center rounded-xl bg-slate-100/90 border border-slate-200/60 px-3 py-2 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition">
+            <Search className="h-4 w-4 text-indigo-500 mr-2 flex-shrink-0" aria-hidden="true" />
+            <input
+              id="global-search-input"
+              ref={inputRef}
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search subjects, notes, question papers..."
+              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 outline-none leading-tight"
+              autoComplete="off"
+              spellCheck="false"
+            />
+
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-slate-400 flex-shrink-0" aria-hidden="true" />
+            ) : query ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('');
+                  inputRef.current?.focus();
+                }}
+                className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 transition flex-shrink-0"
+                aria-label="Clear search input"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            ) : (
+              <kbd className="hidden sm:inline-flex items-center rounded border border-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400">
+                ESC
+              </kbd>
+            )}
+          </div>
         </div>
 
-        {/* Live Region for Screen Readers */}
-        <div aria-live="polite" className="sr-only">
-          {cleanQuery &&
-            `${results.length} result${results.length === 1 ? '' : 's'} available.`}
-        </div>
-
-        {/* Results / Suggestions Container */}
+        {/* ── Scrollable Results / Suggestions ────────── */}
         <div
           ref={listRef}
-          className="max-h-[60vh] overflow-y-auto p-2 sm:p-3 space-y-4"
+          className="flex-1 overflow-y-auto p-3.5 sm:p-5 space-y-5"
           tabIndex={-1}
         >
-          {/* When query is empty: quick suggestion chips */}
+          {/* Default State: Popular Subjects & Recent Materials */}
           {!cleanQuery && (
-            <div className="p-3">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
-                Popular Subjects
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {categories.slice(0, 8).map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      router.push(`/category/${cat.id}`);
-                    }}
-                    className="flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 transition"
-                  >
-                    <BookOpen className="h-3 w-3 text-indigo-500" />
-                    {cat.name}
-                  </button>
-                ))}
+            <div className="space-y-6">
+              {/* Popular Subjects */}
+              <div>
+                <p className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3">
+                  Subjects
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        router.push(`/category/${cat.id}`);
+                      }}
+                      className="flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50/70 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 active:scale-95 transition shadow-2xs"
+                    >
+                      <span>{getSubjectEmoji(cat.name)}</span>
+                      <span>{cat.name}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
+              {/* Recent Materials */}
               {documents.length > 0 && (
-                <div className="mt-5">
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                    Recent Documents ({documents.length} available)
+                <div>
+                  <p className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3">
+                    Recent Study Materials ({documents.length} available)
                   </p>
-                  <div className="space-y-1">
-                    {documents.slice(0, 4).map((doc) => (
-                      <button
-                        key={doc.id}
-                        type="button"
-                        onClick={() => {
-                          onClose();
-                          router.push(`/read/${doc.id}`);
-                        }}
-                        className="flex w-full items-center justify-between rounded-xl p-2.5 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 transition group"
-                      >
-                        <span className="flex items-center gap-2 truncate">
-                          <FileText className="h-3.5 w-3.5 text-slate-400 group-hover:text-indigo-600 flex-shrink-0" />
-                          <span className="truncate">{doc.title}</span>
-                        </span>
-                        <ArrowRight className="h-3.5 w-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition flex-shrink-0" />
-                      </button>
-                    ))}
+                  <div className="space-y-2">
+                    {documents.slice(0, 5).map((doc) => {
+                      const isKey = doc.title.toLowerCase().includes('answer');
+                      const isModel = doc.title.toLowerCase().includes('model') || doc.title.toLowerCase().includes('samagra');
+                      const isEM = doc.title.toUpperCase().includes('[EM]') || doc.title.toUpperCase().includes('EM ');
+                      const isMM = doc.title.toUpperCase().includes('[MM]') || doc.title.toUpperCase().includes('MM ');
+
+                      return (
+                        <button
+                          key={doc.id}
+                          type="button"
+                          onClick={() => {
+                            onClose();
+                            router.push(`/read/${doc.id}`);
+                          }}
+                          className="flex w-full items-center gap-3 rounded-2xl border border-slate-200/80 bg-white p-3 text-left shadow-2xs hover:border-indigo-300 active:scale-[0.99] transition group"
+                        >
+                          <div
+                            className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border ${
+                              isKey
+                                ? 'bg-emerald-50 border-emerald-100 text-emerald-600'
+                                : isModel
+                                ? 'bg-violet-50 border-violet-100 text-violet-600'
+                                : 'bg-indigo-50 border-indigo-100 text-indigo-600'
+                            }`}
+                          >
+                            {isKey ? (
+                              <CheckCircle2 className="h-4.5 w-4.5" />
+                            ) : isModel ? (
+                              <Bookmark className="h-4.5 w-4.5" />
+                            ) : (
+                              <FileText className="h-4.5 w-4.5" />
+                            )}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1 mb-0.5 flex-wrap">
+                              {isKey ? (
+                                <span className="rounded bg-emerald-50 px-1.5 py-0.2 text-[9px] font-bold text-emerald-700">
+                                  Answer Key
+                                </span>
+                              ) : (
+                                <span className="rounded bg-indigo-50 px-1.5 py-0.2 text-[9px] font-bold text-indigo-700">
+                                  Question Paper
+                                </span>
+                              )}
+                              {isEM && (
+                                <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[9px] font-bold text-slate-700">
+                                  EM
+                                </span>
+                              )}
+                              {isMM && (
+                                <span className="rounded bg-amber-50 px-1.5 py-0.2 text-[9px] font-bold text-amber-800">
+                                  MM
+                                </span>
+                              )}
+                            </div>
+                            <p className="truncate text-xs font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                              {doc.title}
+                            </p>
+                          </div>
+
+                          <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition flex-shrink-0" />
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
             </div>
           )}
 
-          {/* Results: Subject Matches */}
+          {/* Active Search Results: Subject Matches */}
           {cleanQuery && matchingCategories.length > 0 && (
             <div>
-              <p className="px-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                Subjects ({matchingCategories.length})
+              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">
+                Matching Subjects ({matchingCategories.length})
               </p>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {matchingCategories.map((cat, idx) => {
                   const isSelected = selectedIndex === idx;
                   return (
@@ -267,20 +365,18 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
                       aria-selected={isSelected}
                       onClick={() => navigateToResult({ type: 'category', data: cat })}
                       onMouseEnter={() => setSelectedIndex(idx)}
-                      className={`flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-colors ${
+                      className={`flex cursor-pointer items-center justify-between rounded-2xl p-3 text-sm transition-all select-none ${
                         isSelected
-                          ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                          : 'text-slate-700 hover:bg-slate-50'
+                          ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold'
+                          : 'bg-white border border-slate-200/70 hover:bg-slate-50 text-slate-800'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 flex-shrink-0">
-                          <BookOpen className="h-3.5 w-3.5" />
-                        </div>
+                        <span className="text-xl">{getSubjectEmoji(cat.name)}</span>
                         <span className="truncate">{cat.name}</span>
                       </div>
-                      <span className="text-xs text-indigo-600 flex items-center gap-1 flex-shrink-0 font-medium">
-                        View Subject <ArrowRight className="h-3 w-3" />
+                      <span className="text-xs text-indigo-600 flex items-center gap-0.5 font-bold">
+                        Browse <ChevronRight className="h-3.5 w-3.5" />
                       </span>
                     </div>
                   );
@@ -289,17 +385,20 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
             </div>
           )}
 
-          {/* Results: Document Matches */}
+          {/* Active Search Results: Document Matches */}
           {cleanQuery && matchingDocuments.length > 0 && (
             <div>
-              <p className="px-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                Documents ({matchingDocuments.length})
+              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">
+                Matching Documents ({matchingDocuments.length})
               </p>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {matchingDocuments.map((doc, idx) => {
                   const itemIndex = matchingCategories.length + idx;
                   const isSelected = selectedIndex === itemIndex;
                   const catName = categoryMap.get(doc.categoryId);
+                  const isKey = doc.title.toLowerCase().includes('answer');
+                  const isModel = doc.title.toLowerCase().includes('model');
+
                   return (
                     <div
                       key={doc.id}
@@ -307,31 +406,40 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
                       aria-selected={isSelected}
                       onClick={() => navigateToResult({ type: 'document', data: doc })}
                       onMouseEnter={() => setSelectedIndex(itemIndex)}
-                      className={`flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-colors ${
+                      className={`flex cursor-pointer items-center gap-3 rounded-2xl p-3 text-sm transition-all select-none ${
                         isSelected
-                          ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                          : 'text-slate-700 hover:bg-slate-50'
+                          ? 'bg-indigo-50 border-2 border-indigo-500 shadow-xs'
+                          : 'bg-white border border-slate-200/80 hover:bg-slate-50'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600 flex-shrink-0">
-                          <FileText className="h-3.5 w-3.5" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm">{doc.title}</p>
-                          {catName && (
-                            <p className="text-[10px] text-slate-400 font-normal truncate">
-                              {catName}
-                            </p>
-                          )}
-                        </div>
+                      <div
+                        className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border ${
+                          isKey
+                            ? 'bg-emerald-50 border-emerald-100 text-emerald-600'
+                            : isModel
+                            ? 'bg-violet-50 border-violet-100 text-violet-600'
+                            : 'bg-indigo-50 border-indigo-100 text-indigo-600'
+                        }`}
+                      >
+                        {isKey ? (
+                          <CheckCircle2 className="h-4.5 w-4.5" />
+                        ) : (
+                          <FileText className="h-4.5 w-4.5" />
+                        )}
                       </div>
-                      <span className="flex items-center gap-1.5 flex-shrink-0">
-                        <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                          {doc.type === 'drive_link' ? 'Drive' : 'PDF'}
-                        </span>
-                        <CornerDownLeft className="h-3 w-3 text-slate-400 hidden sm:inline" />
-                      </span>
+
+                      <div className="min-w-0 flex-1">
+                        <p className="line-clamp-2 text-xs font-semibold text-slate-800 leading-snug">
+                          {doc.title}
+                        </p>
+                        {catName && (
+                          <p className="text-[10px] text-slate-400 font-medium mt-0.5 truncate">
+                            {catName}
+                          </p>
+                        )}
+                      </div>
+
+                      <ChevronRight className="h-4 w-4 text-slate-300 flex-shrink-0" />
                     </div>
                   );
                 })}
@@ -341,29 +449,14 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
 
           {/* Empty state when searching but no matches */}
           {cleanQuery && results.length === 0 && (
-            <div className="p-8 text-center">
-              <p className="text-sm font-semibold text-slate-700">No matching materials found</p>
+            <div className="p-8 text-center my-4">
+              <Search className="mx-auto h-10 w-10 text-slate-300 mb-2" />
+              <p className="text-sm font-bold text-slate-700">No matching study materials found</p>
               <p className="mt-1 text-xs text-slate-400">
-                Try searching with a different subject or document keyword.
+                Try searching with another keyword or subject name.
               </p>
             </div>
           )}
-        </div>
-
-        {/* Footer shortcuts */}
-        <div className="hidden sm:flex items-center justify-between border-t border-slate-100 bg-slate-50/80 px-4 py-2 text-[11px] text-slate-400">
-          <div className="flex items-center gap-3">
-            <span>
-              <kbd className="rounded border bg-white px-1 py-0.5 font-sans">↑</kbd>{' '}
-              <kbd className="rounded border bg-white px-1 py-0.5 font-sans">↓</kbd> Navigate
-            </span>
-            <span>
-              <kbd className="rounded border bg-white px-1 py-0.5 font-sans">↵</kbd> Select
-            </span>
-          </div>
-          <span>
-            <kbd className="rounded border bg-white px-1 py-0.5 font-sans">ESC</kbd> Close
-          </span>
         </div>
       </div>
     </div>
