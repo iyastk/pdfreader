@@ -86,7 +86,7 @@ export default function InstallGuideModal({
 
         {/* Direct One-Tap Install (if Android native prompt is available) */}
         {canInstallPrompt && onNativeInstall && (
-          <div className="mb-5">
+          <div className="mb-4">
             <button
               type="button"
               onClick={onNativeInstall}
@@ -95,13 +95,28 @@ export default function InstallGuideModal({
               <Download className="h-4 w-4" />
               Install App Now
             </button>
-            <div className="relative flex py-3 items-center">
+            <div className="relative flex py-2.5 items-center">
               <div className="flex-grow border-t border-slate-200"></div>
-              <span className="flex-shrink mx-3 text-[11px] text-slate-400 font-medium">Or follow manual steps</span>
+              <span className="flex-shrink mx-3 text-[11px] text-slate-400 font-medium">Or download directly</span>
               <div className="flex-grow border-t border-slate-200"></div>
             </div>
           </div>
         )}
+
+        {/* Direct Android APK Download (Recommended for Family Link & offline) */}
+        <div className="mb-4">
+          <a
+            href="/sslc-reader.apk"
+            download="SSLC_Reader.apk"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3 px-4 text-xs font-bold text-white shadow-md shadow-emerald-200 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <Download className="h-4 w-4" />
+            Download Android App (.APK)
+          </a>
+          <p className="text-[10px] text-center text-slate-400 mt-1">
+            Family Link Safe • 100% Native Android App
+          </p>
+        </div>
 
         {/* Instructions by Platform */}
         {platform === 'ios' ? (
