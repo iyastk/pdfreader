@@ -23,7 +23,7 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
-  overscroll-behavior: none;
+  overscroll-behavior-y: contain;
 }
 
 body {
@@ -32,6 +32,13 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+}
+
+/* Eliminate 300ms mobile tap delay for instant touch response */
+button, a, input, select, textarea {
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
