@@ -54,28 +54,28 @@ export default async function HomePage() {
             {/* Quick search input */}
             <HomeSearchBar />
 
-            {/* Stats */}
-            <div className="mt-6 flex flex-wrap gap-2">
-              <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 backdrop-blur-sm">
-                <span className="text-lg" aria-hidden="true">📚</span>
+            {/* Stats: Clean 3-column mobile-friendly grid */}
+            <div className="mt-5 grid grid-cols-3 gap-2">
+              <div className="flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-1 sm:gap-2.5 rounded-xl border border-white/20 bg-white/10 px-2 py-2 sm:px-3 sm:py-2 backdrop-blur-sm text-center sm:text-left">
+                <span className="text-base sm:text-lg" aria-hidden="true">📚</span>
                 <div>
-                  <p className="text-xs text-indigo-200">Subjects</p>
-                  <p className="text-sm font-bold">{categories.length}</p>
+                  <p className="text-[10px] sm:text-xs text-indigo-200 leading-tight">Subjects</p>
+                  <p className="text-xs sm:text-sm font-bold leading-tight">{categories.length}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 backdrop-blur-sm">
-                <span className="text-lg" aria-hidden="true">📄</span>
+              <div className="flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-1 sm:gap-2.5 rounded-xl border border-white/20 bg-white/10 px-2 py-2 sm:px-3 sm:py-2 backdrop-blur-sm text-center sm:text-left">
+                <span className="text-base sm:text-lg" aria-hidden="true">📄</span>
                 <div>
-                  <p className="text-xs text-indigo-200">Documents</p>
-                  <p className="text-sm font-bold">{totalDocs}</p>
+                  <p className="text-[10px] sm:text-xs text-indigo-200 leading-tight">Materials</p>
+                  <p className="text-xs sm:text-sm font-bold leading-tight">{totalDocs}</p>
                 </div>
               </div>
               {categories.length > 0 && (
-                <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 backdrop-blur-sm">
-                  <TrendingUp className="h-4 w-4 text-green-300" aria-hidden="true" />
+                <div className="flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-1 sm:gap-2.5 rounded-xl border border-white/20 bg-white/10 px-2 py-2 sm:px-3 sm:py-2 backdrop-blur-sm text-center sm:text-left">
+                  <TrendingUp className="h-4 w-4 text-emerald-300" aria-hidden="true" />
                   <div>
-                    <p className="text-xs text-indigo-200">Avg per subject</p>
-                    <p className="text-sm font-bold">{Math.round(totalDocs / categories.length)}</p>
+                    <p className="text-[10px] sm:text-xs text-indigo-200 leading-tight">Avg/Sub</p>
+                    <p className="text-xs sm:text-sm font-bold leading-tight">{Math.round(totalDocs / categories.length)}</p>
                   </div>
                 </div>
               )}

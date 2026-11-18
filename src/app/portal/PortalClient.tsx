@@ -116,32 +116,32 @@ export default function PortalClient({ categories, documents }: PortalClientProp
             All Kerala SSLC subject notes, model papers, 2026 exam answer keys & DIET modules arranged cleanly in one place. All files open directly in your in-app PDF reader without opening any external browser!
           </p>
 
-          {/* Mode Switcher Tabs */}
-          <div className="mt-5 flex items-center gap-2 border-t border-indigo-600/60 pt-4">
+          {/* Mode Switcher Tabs: Native segmented control style */}
+          <div className="mt-4 grid grid-cols-2 gap-1.5 rounded-2xl bg-black/20 p-1 backdrop-blur-md">
             <button
               type="button"
               onClick={() => setActiveTab('directory')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs sm:text-sm font-bold transition-all active:scale-[0.98] ${
                 activeTab === 'directory'
-                  ? 'bg-white text-indigo-900 shadow-md scale-102'
-                  : 'bg-white/10 text-indigo-100 hover:bg-white/20'
+                  ? 'bg-white text-indigo-900 shadow-md'
+                  : 'text-indigo-100 hover:text-white hover:bg-white/10'
               }`}
             >
-              <ListOrdered className="h-4 w-4" />
-              <span>Organized Directory ({filteredDocuments.length})</span>
+              <ListOrdered className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">Directory ({filteredDocuments.length})</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('webview')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs sm:text-sm font-bold transition-all active:scale-[0.98] ${
                 activeTab === 'webview'
-                  ? 'bg-white text-indigo-900 shadow-md scale-102'
-                  : 'bg-white/10 text-indigo-100 hover:bg-white/20'
+                  ? 'bg-white text-indigo-900 shadow-md'
+                  : 'text-indigo-100 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Globe className="h-4 w-4" />
-              <span>Live Aplusblog Page View</span>
+              <Globe className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">Live Page View</span>
             </button>
           </div>
         </div>
