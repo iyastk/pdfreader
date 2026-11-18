@@ -82,7 +82,7 @@ export default function MobileBottomNav() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
+          gridTemplateColumns: isInstalled ? 'repeat(4, 1fr)' : 'repeat(5, 1fr)',
           width: '100%',
           maxWidth: '520px',
           height: '56px',
@@ -178,62 +178,43 @@ export default function MobileBottomNav() {
           <span style={labelStyle(false)}>Search</span>
         </button>
 
-        {/* 5. Install App Button */}
-        <button
-          type="button"
-          onClick={promptInstall}
-          style={itemStyle}
-          aria-label={isInstalled ? 'App is installed' : 'Install SSLC Reader App'}
-        >
-          {isInstalled ? (
-            <>
-              <div
+        {/* 5. Install App Button (Only shown in mobile browser before app is installed) */}
+        {!isInstalled && (
+          <button
+            type="button"
+            onClick={promptInstall}
+            style={itemStyle}
+            aria-label="Install SSLC Reader App"
+          >
+            <div
+              style={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '12px',
+                padding: '3px 8px',
+                backgroundColor: '#eef2ff',
+                color: '#4f46e5',
+              }}
+            >
+              <Download size={20} strokeWidth={2.2} />
+              <span
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '12px',
-                  padding: '3px 8px',
-                  backgroundColor: '#ecfdf5',
-                  color: '#059669',
+                  position: 'absolute',
+                  top: '1px',
+                  right: '3px',
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '999px',
+                  backgroundColor: '#ef4444',
+                  border: '1.5px solid #ffffff',
                 }}
-              >
-                <CheckCircle2 size={20} strokeWidth={2.2} />
-              </div>
-              <span style={{ ...labelStyle(false), color: '#059669' }}>Installed</span>
-            </>
-          ) : (
-            <>
-              <div
-                style={{
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '12px',
-                  padding: '3px 8px',
-                  backgroundColor: '#eef2ff',
-                  color: '#4f46e5',
-                }}
-              >
-                <Download size={20} strokeWidth={2.2} />
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '1px',
-                    right: '3px',
-                    width: '7px',
-                    height: '7px',
-                    borderRadius: '999px',
-                    backgroundColor: '#ef4444',
-                    border: '1.5px solid #ffffff',
-                  }}
-                />
-              </div>
-              <span style={{ ...labelStyle(true), color: '#4338ca' }}>Install</span>
-            </>
-          )}
-        </button>
+              />
+            </div>
+            <span style={{ ...labelStyle(true), color: '#4338ca' }}>Install</span>
+          </button>
+        )}
       </div>
     </nav>
   );

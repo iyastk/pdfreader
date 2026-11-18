@@ -29,17 +29,19 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
 
   useEffect(() => {
-    // 1. Detect if running as standalone PWA
+    // 1. Detect if running as standalone PWA or Android Native App
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isNativeApp = userAgent.includes('sslcreaderapp');
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+      (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
+      isNativeApp;
 
     if (isStandalone) {
       setIsInstalled(true);
     }
 
     // 2. Detect platform
-    const userAgent = window.navigator.userAgent.toLowerCase();
     if (/iphone|ipad|ipod/.test(userAgent)) {
       setPlatform('ios');
     } else if (/android/.test(userAgent)) {
