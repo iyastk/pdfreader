@@ -120,15 +120,15 @@ export default function SearchBar({ documents }: SearchBarProps) {
         )}
       </div>
 
-      {/* ── Touch-Friendly Study Filter Chips ─────── */}
-      <div className="mb-4 flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none" role="tablist" aria-label="Filter documents">
+      {/* ── Touch-Friendly Study Filter Tabs: Square with Small Rounded Edges & Ample X Padding ─────── */}
+      <div className="mb-4 flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-2 pt-1 scrollbar-none" role="tablist" aria-label="Filter documents">
         <button
           type="button"
           onClick={() => setFilter('all')}
-          className={`flex-shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+          className={`flex-shrink-0 whitespace-nowrap rounded-xl px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs active:scale-95 ${
             filter === 'all'
-              ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
-              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              ? 'bg-indigo-600 text-white shadow-xs ring-2 ring-indigo-600/20'
+              : 'bg-white border border-slate-200/90 text-slate-700 hover:bg-slate-50'
           }`}
         >
           All ({counts.all})
@@ -138,10 +138,10 @@ export default function SearchBar({ documents }: SearchBarProps) {
           <button
             type="button"
             onClick={() => setFilter('qp')}
-            className={`flex-shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+            className={`flex-shrink-0 whitespace-nowrap rounded-xl px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs active:scale-95 ${
               filter === 'qp'
-                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
-                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                ? 'bg-indigo-600 text-white shadow-xs ring-2 ring-indigo-600/20'
+                : 'bg-white border border-slate-200/90 text-slate-700 hover:bg-slate-50'
             }`}
           >
             Question Papers ({counts.qp})
@@ -152,10 +152,10 @@ export default function SearchBar({ documents }: SearchBarProps) {
           <button
             type="button"
             onClick={() => setFilter('key')}
-            className={`flex-shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+            className={`flex-shrink-0 whitespace-nowrap rounded-xl px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs active:scale-95 ${
               filter === 'key'
-                ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-200'
-                : 'bg-white border border-emerald-200/80 text-emerald-700 hover:bg-emerald-50'
+                ? 'bg-emerald-600 text-white shadow-xs ring-2 ring-emerald-600/20'
+                : 'bg-white border border-emerald-200/90 text-emerald-700 hover:bg-emerald-50'
             }`}
           >
             Answer Keys ({counts.key})
@@ -166,10 +166,10 @@ export default function SearchBar({ documents }: SearchBarProps) {
           <button
             type="button"
             onClick={() => setFilter('em')}
-            className={`flex-shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+            className={`flex-shrink-0 whitespace-nowrap rounded-xl px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs active:scale-95 ${
               filter === 'em'
-                ? 'bg-slate-800 text-white shadow-sm'
-                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                ? 'bg-slate-800 text-white shadow-xs ring-2 ring-slate-800/20'
+                : 'bg-white border border-slate-200/90 text-slate-700 hover:bg-slate-50'
             }`}
           >
             English Medium ({counts.em})
@@ -180,10 +180,10 @@ export default function SearchBar({ documents }: SearchBarProps) {
           <button
             type="button"
             onClick={() => setFilter('mm')}
-            className={`flex-shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+            className={`flex-shrink-0 whitespace-nowrap rounded-xl px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs active:scale-95 ${
               filter === 'mm'
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'bg-white border border-amber-200 text-amber-800 hover:bg-amber-50'
+                ? 'bg-amber-600 text-white shadow-xs ring-2 ring-amber-600/20'
+                : 'bg-white border border-amber-200/90 text-amber-800 hover:bg-amber-50'
             }`}
           >
             Malayalam Medium ({counts.mm})
@@ -194,10 +194,10 @@ export default function SearchBar({ documents }: SearchBarProps) {
           <button
             type="button"
             onClick={() => setFilter('model')}
-            className={`flex-shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+            className={`flex-shrink-0 whitespace-nowrap rounded-xl px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs active:scale-95 ${
               filter === 'model'
-                ? 'bg-violet-600 text-white shadow-sm'
-                : 'bg-white border border-violet-200 text-violet-700 hover:bg-violet-50'
+                ? 'bg-violet-600 text-white shadow-xs ring-2 ring-violet-600/20'
+                : 'bg-white border border-violet-200/90 text-violet-700 hover:bg-violet-50'
             }`}
           >
             Model Exams ({counts.model})

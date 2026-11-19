@@ -120,12 +120,12 @@ export default function PortalClient({ categories, documents }: PortalClientProp
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-5 sm:px-8 py-5 sm:py-8 focus:outline-none pb-28">
+    <div className="mx-auto max-w-5xl px-6 sm:px-10 py-6 sm:py-8 focus:outline-none pb-32">
       
       {/* ── Header: Title & Clean Full-Width Segmented Tabs ── */}
       <div className="mb-6 space-y-4">
         <div>
-          <h1 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
             SSLC Resource Hub
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
@@ -133,14 +133,14 @@ export default function PortalClient({ categories, documents }: PortalClientProp
           </p>
         </div>
 
-        {/* Dedicated Full-Width Segmented Switcher (Square with small round edges) */}
-        <div className="grid grid-cols-2 gap-1.5 rounded-2xl bg-slate-100 p-1.5 border border-slate-200/70 shadow-2xs">
+        {/* Dedicated Full-Width Segmented Switcher (Square with small round edges & generous X padding) */}
+        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1.5 border border-slate-200/70 shadow-2xs">
           <button
             type="button"
             onClick={() => setActiveTab('directory')}
-            className={`flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs sm:text-sm font-bold transition-all ${
+            className={`flex items-center justify-center gap-2.5 rounded-xl py-3 px-6 text-xs sm:text-sm font-bold transition-all ${
               activeTab === 'directory'
-                ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/50'
+                ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/60'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -150,9 +150,9 @@ export default function PortalClient({ categories, documents }: PortalClientProp
           <button
             type="button"
             onClick={() => setActiveTab('webview')}
-            className={`flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs sm:text-sm font-bold transition-all ${
+            className={`flex items-center justify-center gap-2.5 rounded-xl py-3 px-6 text-xs sm:text-sm font-bold transition-all ${
               activeTab === 'webview'
-                ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/50'
+                ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/60'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -166,30 +166,30 @@ export default function PortalClient({ categories, documents }: PortalClientProp
       {activeTab === 'directory' && (
         <div className="space-y-0">
           
-          {/* Search Input with generous margin */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          {/* Search Input with generous margin and comfortable padding */}
+          <div className="relative mb-5">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by topic, year, district..."
-              className="w-full rounded-2xl border border-slate-200/90 bg-white pl-10 pr-9 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/15 shadow-xs"
+              className="w-full rounded-2xl border border-slate-200/90 bg-white pl-11 pr-10 py-3 text-xs sm:text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/15 shadow-xs"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full h-5 w-5 flex items-center justify-center"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full h-5 w-5 flex items-center justify-center"
               >
                 ✕
               </button>
             )}
           </div>
 
-          {/* Type Filter Tabs: Modern Square Tabs with Small Rounded Edges & Ample Padding */}
-          <div className="mb-3.5">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 scrollbar-none -mx-1 px-1">
+          {/* Type Filter Tabs: Modern Square Tabs with Ample X-Padding in Both Directions */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-2.5 pt-1 scrollbar-none -mx-6 px-6 sm:-mx-10 sm:px-10">
               {[
                 { id: 'all', label: `All (${documents.length})` },
                 { id: 'qp', label: 'Question Papers' },
@@ -201,7 +201,7 @@ export default function PortalClient({ categories, documents }: PortalClientProp
                   key={f.id}
                   type="button"
                   onClick={() => setTypeFilter(f.id as typeof typeFilter)}
-                  className={`flex-shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition-all shadow-2xs ${
+                  className={`flex-shrink-0 whitespace-nowrap rounded-xl px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
                     typeFilter === f.id
                       ? 'bg-indigo-600 text-white shadow-xs ring-2 ring-indigo-600/20'
                       : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50 hover:border-slate-300'
@@ -213,13 +213,13 @@ export default function PortalClient({ categories, documents }: PortalClientProp
             </div>
           </div>
 
-          {/* Subject Filter Tabs: Square Tabs with Small Rounded Edges & Ample Padding */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 scrollbar-none -mx-1 px-1">
+          {/* Subject Filter Tabs: Square Tabs with Ample X-Padding in Both Directions */}
+          <div className="mb-7">
+            <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-2.5 pt-1 scrollbar-none -mx-6 px-6 sm:-mx-10 sm:px-10">
               <button
                 type="button"
                 onClick={() => setSelectedCategory('all')}
-                className={`flex-shrink-0 rounded-xl px-3.5 py-2 text-xs font-bold transition-all shadow-2xs ${
+                className={`flex-shrink-0 whitespace-nowrap rounded-xl px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
                   selectedCategory === 'all'
                     ? 'bg-indigo-50 text-indigo-700 border-2 border-indigo-500 shadow-xs'
                     : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'
@@ -232,7 +232,7 @@ export default function PortalClient({ categories, documents }: PortalClientProp
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex-shrink-0 rounded-xl px-3.5 py-2 text-xs font-bold transition-all shadow-2xs ${
+                  className={`flex-shrink-0 whitespace-nowrap rounded-xl px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
                     selectedCategory === cat.id
                       ? 'bg-indigo-50 text-indigo-700 border-2 border-indigo-500 shadow-xs'
                       : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50'

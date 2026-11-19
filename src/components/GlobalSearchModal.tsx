@@ -186,25 +186,25 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
       <div
         className="relative w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-xl bg-white sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden focus-visible:outline-none z-10"
         style={{
-          paddingTop: 'max(env(safe-area-inset-top, 0px), 10px)',
-          paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)',
+          paddingTop: 'max(env(safe-area-inset-top, 0px), 16px)',
+          paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 14px)',
         }}
       >
-        {/* ── Top Bar: Back Button + Spacious Search Bar ── */}
-        <div className="flex items-center gap-2.5 border-b border-slate-100 px-3.5 py-3 sm:px-5">
+        {/* ── Top Bar: Back Button + Spacious Search Bar with Clear Margins ── */}
+        <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3 sm:px-6">
           {/* Back Arrow button */}
           <button
             type="button"
             onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 active:scale-95 transition flex-shrink-0"
+            className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 active:scale-95 transition flex-shrink-0"
             aria-label="Close search"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
 
           {/* Search Input Box */}
-          <div className="relative flex-1 flex items-center rounded-xl bg-slate-100/90 border border-slate-200/60 px-3 py-2 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition">
-            <Search className="h-4 w-4 text-indigo-500 mr-2 flex-shrink-0" aria-hidden="true" />
+          <div className="relative flex-1 flex items-center rounded-xl bg-slate-100/90 border border-slate-200/70 px-3.5 py-2.5 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition">
+            <Search className="h-4.5 w-4.5 text-indigo-500 mr-2.5 flex-shrink-0" aria-hidden="true" />
             <input
               id="global-search-input"
               ref={inputRef}
@@ -212,7 +212,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search subjects, notes, question papers..."
-              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 outline-none leading-tight"
+              className="w-full bg-transparent text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none leading-tight"
               autoComplete="off"
               spellCheck="false"
             />
@@ -232,17 +232,17 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
                 <X className="h-3 w-3" />
               </button>
             ) : (
-              <kbd className="hidden sm:inline-flex items-center rounded border border-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400">
+              <kbd className="hidden sm:inline-flex items-center rounded border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-semibold text-slate-400">
                 ESC
               </kbd>
             )}
           </div>
         </div>
 
-        {/* ── Scrollable Results / Suggestions ────────── */}
+        {/* ── Scrollable Results / Suggestions with Generous Padding ────────── */}
         <div
           ref={listRef}
-          className="flex-1 overflow-y-auto p-3.5 sm:p-5 space-y-5"
+          className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6"
           tabIndex={-1}
         >
           {/* Default State: Popular Subjects & Recent Materials */}
@@ -253,7 +253,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
                 <p className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3">
                   Subjects
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   {categories.map((cat) => (
                     <button
                       key={cat.id}
@@ -262,9 +262,9 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
                         onClose();
                         router.push(`/category/${cat.id}`);
                       }}
-                      className="flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50/70 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 active:scale-95 transition shadow-2xs"
+                      className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50/80 px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 active:scale-95 transition shadow-2xs whitespace-nowrap"
                     >
-                      <span>{getSubjectEmoji(cat.name)}</span>
+                      <span className="text-sm">{getSubjectEmoji(cat.name)}</span>
                       <span>{cat.name}</span>
                     </button>
                   ))}
