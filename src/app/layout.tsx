@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { SearchProvider } from '@/context/SearchContext';
 import { PWAProvider } from '@/context/PWAContext';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 
 export const metadata: Metadata = {
   title: 'SSLC Reader — Study Smarter',
@@ -43,7 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <style
           dangerouslySetInnerHTML={{
             __html: `
-              *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+              *, *::before, *::after { box-sizing: border-box; }
+              body { margin: 0; padding: 0; }
               html, body { min-height: 100%; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f4ff; color: #0f172a; -webkit-tap-highlight-color: transparent; }
               main { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important; }
               .mobile-bottom-nav { display: block !important; position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; z-index: 9999 !important; }
@@ -62,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <PWAProvider>
             <SearchProvider>
+              <ServiceWorkerRegistrar />
               {children}
               <MobileBottomNav />
             </SearchProvider>

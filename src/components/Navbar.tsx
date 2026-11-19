@@ -37,7 +37,7 @@ export default function Navbar() {
       }`}
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 sm:px-10 h-14 sm:h-16">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 sm:px-10 h-14 sm:h-16" style={{ paddingLeft: '24px', paddingRight: '24px' }}>
         {/* Logo with generous left padding */}
         <Link
           href="/"

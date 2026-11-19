@@ -1,9 +1,9 @@
-// Enhanced Service Worker for SSLC Reader (v3)
-// Network-First for HTML navigation to prevent stale CSS hash mismatches
-// Cache-First for versioned immutable static assets (_next/static)
+// Enhanced Service Worker for SSLC Reader (v4)
+// Network-First for HTML navigation and RSC data to prevent stale cached UI
+// Cache-First only for immutable hashed static assets (_next/static)
 
-const CACHE_NAME = 'sslc-reader-v3';
-const STATIC_CACHE_NAME = 'sslc-reader-static-v3';
+const CACHE_NAME = 'sslc-reader-v4';
+const STATIC_CACHE_NAME = 'sslc-reader-static-v4';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -11,8 +11,9 @@ const PRECACHE_ASSETS = [
   '/favicon.ico',
 ];
 
-// Install: precache essential shell assets
+// Install: precache essential shell assets and activate immediately
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
@@ -20,7 +21,6 @@ self.addEventListener('install', (event) => {
       });
     })
   );
-  self.skipWaiting();
 });
 
 // Activate: purge all old caches immediately
@@ -35,9 +35,8 @@ self.addEventListener('activate', (event) => {
           }
         })
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 // Listen for skip waiting messages from the UI
@@ -83,9 +82,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML page navigations: Network-First with Cache Fallback
-  // This guarantees phones always receive the matching CSS hash when online!
-  if (req.mode === 'navigate') {
+  // HTML page navigations & Next.js RSC data: Network-First with Cache Fallback
+  // This guarantees phones and WebViews always receive the latest live layout and styles!
+  const isNav = req.mode === 'navigate';
+  const isRsc = url.searchParams.has('_rsc') || req.headers.get('accept')?.includes('text/x-component');
+
+  if (isNav || isRsc) {
     event.respondWith(
       fetch(req)
         .then(async (networkRes) => {
@@ -105,20 +107,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // All other same-origin requests
+  // All other same-origin requests: Stale-While-Revalidate
   if (url.origin === self.location.origin) {
     event.respondWith(
       caches.match(req).then((cached) => {
-        return (
-          cached ||
-          fetch(req).then((res) => {
-            if (res.ok && res.status === 200) {
-              const resClone = res.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
-            }
-            return res;
-          })
-        );
+        const fetchPromise = fetch(req).then((res) => {
+          if (res.ok && res.status === 200) {
+            const resClone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+          }
+          return res;
+        }).catch(() => cached);
+        return cached || fetchPromise;
       })
     );
   }

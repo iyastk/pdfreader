@@ -120,11 +120,11 @@ export default function PortalClient({ categories, documents }: PortalClientProp
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-6 sm:px-10 py-6 sm:py-8 focus:outline-none pb-32">
+    <div className="mx-auto max-w-5xl px-6 sm:px-10 py-6 sm:py-8 focus:outline-none pb-32" style={{ paddingLeft: '24px', paddingRight: '24px' }}>
       
       {/* ── Header: Title & Clean Full-Width Segmented Tabs ── */}
       <div className="mb-6 space-y-4">
-        <div>
+        <div style={{ paddingLeft: '4px' }}>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
             SSLC Resource Hub
           </h1>
@@ -138,26 +138,28 @@ export default function PortalClient({ categories, documents }: PortalClientProp
           <button
             type="button"
             onClick={() => setActiveTab('directory')}
-            className={`flex items-center justify-center gap-2.5 rounded-xl py-3 px-6 text-xs sm:text-sm font-bold transition-all ${
+            style={{ paddingLeft: '24px', paddingRight: '24px', paddingTop: '12px', paddingBottom: '12px' }}
+            className={`flex items-center justify-center gap-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === 'directory'
                 ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/60'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
             <ListOrdered className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">Curated Directory</span>
+            <span className="truncate">Directory ({documents.length})</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('webview')}
-            className={`flex items-center justify-center gap-2.5 rounded-xl py-3 px-6 text-xs sm:text-sm font-bold transition-all ${
+            style={{ paddingLeft: '24px', paddingRight: '24px', paddingTop: '12px', paddingBottom: '12px' }}
+            className={`flex items-center justify-center gap-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === 'webview'
                 ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/60'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
             <Globe className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">Live Web View</span>
+            <span className="truncate">Live Page View</span>
           </button>
         </div>
       </div>
@@ -201,7 +203,8 @@ export default function PortalClient({ categories, documents }: PortalClientProp
                   key={f.id}
                   type="button"
                   onClick={() => setTypeFilter(f.id as typeof typeFilter)}
-                  className={`flex-shrink-0 whitespace-nowrap rounded-xl px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
+                  style={{ paddingLeft: '22px', paddingRight: '22px' }}
+                  className={`flex-shrink-0 whitespace-nowrap rounded-xl py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
                     typeFilter === f.id
                       ? 'bg-indigo-600 text-white shadow-xs ring-2 ring-indigo-600/20'
                       : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50 hover:border-slate-300'
@@ -219,7 +222,8 @@ export default function PortalClient({ categories, documents }: PortalClientProp
               <button
                 type="button"
                 onClick={() => setSelectedCategory('all')}
-                className={`flex-shrink-0 whitespace-nowrap rounded-xl px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
+                style={{ paddingLeft: '22px', paddingRight: '22px' }}
+                className={`flex-shrink-0 whitespace-nowrap rounded-xl py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
                   selectedCategory === 'all'
                     ? 'bg-indigo-50 text-indigo-700 border-2 border-indigo-500 shadow-xs'
                     : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'
@@ -232,7 +236,8 @@ export default function PortalClient({ categories, documents }: PortalClientProp
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex-shrink-0 whitespace-nowrap rounded-xl px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
+                  style={{ paddingLeft: '22px', paddingRight: '22px' }}
+                  className={`flex-shrink-0 whitespace-nowrap rounded-xl py-2.5 text-xs sm:text-sm font-bold transition-all shadow-2xs ${
                     selectedCategory === cat.id
                       ? 'bg-indigo-50 text-indigo-700 border-2 border-indigo-500 shadow-xs'
                       : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50'

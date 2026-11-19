@@ -28,11 +28,11 @@ export default async function HomePage() {
   return (
     <>
       <Navbar />
-      <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl px-6 sm:px-10 py-6 sm:py-8 focus:outline-none pb-28">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl px-6 sm:px-10 py-6 sm:py-8 focus:outline-none pb-28" style={{ paddingLeft: '24px', paddingRight: '24px' }}>
 
         {/* ── Header with Generous Left & Right Margins ── */}
         <section className="mb-5">
-          <div className="mb-3.5 pl-0.5">
+          <div className="mb-3.5 pl-1" style={{ paddingLeft: '8px' }}>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 leading-tight">
               Kerala SSLC Materials
             </h1>

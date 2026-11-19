@@ -50,10 +50,21 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
       setPlatform('desktop');
     }
 
-    // 3. Register service worker
+    // 3. Register service worker and handle auto-update
     if ('serviceWorker' in navigator) {
+      let isRefreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          window.location.reload();
+        }
+      });
+
       navigator.serviceWorker
         .register('/sw.js')
+        .then((reg) => {
+          reg.update().catch(() => {});
+        })
         .catch((err) => console.warn('[PWA] SW register error:', err));
     }
 
