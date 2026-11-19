@@ -35,7 +35,7 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <>
       <Navbar />
-      <main id="main-content" tabIndex={-1} className="mx-auto max-w-3xl px-3.5 py-4 sm:py-8 sm:px-6 lg:px-8 focus:outline-none">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-3xl px-5 sm:px-8 py-5 sm:py-8 focus:outline-none">
 
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm">

@@ -27,7 +27,7 @@ export default function Navbar() {
       }`}
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-3.5 h-13 sm:h-14 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 h-13 sm:h-14 sm:px-8">
         {/* Logo */}
         <Link
           href="/"
